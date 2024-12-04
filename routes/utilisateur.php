@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('disponibilitesChoisie/{id}', [UserController::class, 'DisponibilitesPrestataireChoisi']);// pour lister les disponibilites d'un prestataires       
     Route::get('/listeDisponibilites', [UserController::class, 'listerDisponibilitesPrestataires']);// pour lister les disponi bilites de tout les prestataires
     Route::post('/dureeRendezvous/{prestataireId}', [UserController::class, 'obtenirPlagesDisponibles']);// pres avoire choisi une disponibilites pour determiner sa duree de rendez_vous
-    Route::post('/demandeRendezVous/{prestataireId}', [UserController::class, 'creerRendezVous']);// demander un rendez_vous
+    Route::post('/demandeRendezVous/{prestataireId}', [UserController::class, 'demanderRendezVous']);// demander un rendez_vous
 });
 
 

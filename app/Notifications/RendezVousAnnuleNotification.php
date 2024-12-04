@@ -25,15 +25,33 @@ class RendezVousAnnuleNotification extends Notification
 
     public function toMail($notifiable)
     {
+        
+        $this->rendezVous->load(['client', 'type_rendezvous', 'disponibilite.prestataire']);
+        
+       
+        $clientName = $this->rendezVous->client ? $this->rendezVous->client->name : 'Client inconnu';
+        $typeRendezVousName = $this->rendezVous->type_rendezvous ? $this->rendezVous->type_rendezvous->nomService : 'Type de rendez-vous inconnu';
+        $prestataireName = $this->rendezVous->disponibilite->prestataire ? $this->rendezVous->disponibilite->prestataire->name : 'Prestataire inconnu';
+        $jour = $this->rendezVous->disponibilite ? $this->rendezVous->disponibilite->jour : 'Jour inconnu'; 
+        $heureDebut = $this->rendezVous->heureDebut; 
+        $heureFin = $this->rendezVous->heureFin; 
+        
         return (new MailMessage)
-                    ->subject('Rendez-vous annulé')
+                    ->subject('Annulation de rendez-vous')
                     ->greeting('Bonjour ' . $notifiable->name)
-                    ->line('Le rendez-vous du ' . $this->rendezVous->date . ' à ' . $this->rendezVous->heureDebut . 'avec ' . $this->rendezVous->client->name. ' a été annulé par le client.')
-                    ->line('Détails du rendez-vous :')
-                    ->line('Date : ' . $this->rendezVous->date)
-                    ->line('Heure de début : ' . $this->rendezVous->heureDebut)
-                    ->line('Heure de fin : ' . $this->rendezVous->heureFin)
-                    ->line('Statut : Annulé')
+                    ->line('Votre rendez-vous du ' . $this->rendezVous->jour . ' à ' . $this->rendezVous->heureDebut . ' a été annulé par le client.')
+                    ->line('Détails du rendez-vous:')
+                    ->line('Jour: ' . $jour)
+                    ->line('Heure de début: ' . $heureDebut) 
+                    ->line('Heure de fin: ' . $heureFin) 
+                    ->line('Durée: ' . $this->rendezVous->duree . ' minutes')
+                    ->line('Délai pré-réservation: ' . $this->rendezVous->delaiPreReservation . ' jours')
+                    ->line('Intervalle de planification: ' . $this->rendezVous->intervalPlanification . ' jours')
+                    ->line('Durée avant annulation: ' . $this->rendezVous->dureeAvantAnnulation . ' jours')
+                    ->line('Client: ' . $clientName)
+                    ->line('Type de rendez-vous: ' . $typeRendezVousName)
+                    ->line('Prestataire: ' . $prestataireName)
+                    ->line('Statut: ' . $this->rendezVous->statut)
                     ->action('Voir vos rendez-vous', url('/dashboard'))
                     ->line('Merci d\'avoir utilisé notre service.');
     }

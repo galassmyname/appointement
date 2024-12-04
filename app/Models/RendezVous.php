@@ -18,13 +18,15 @@ class RendezVous extends Model
         'delaiPreReservation',
         'intervalPlanification',
         'dureeAvantAnnulation',
-        'disponibilite_id', // Ajouté
-        
+        'disponibilite_id',
         'type_rendezvous_id',
         'client_id',
         'prestataire_id',
-        'status', // Ajouté
+        'status',
+        'heureDebut', // Ajouté
+        'heureFin',   // Ajouté
     ];
+    
 
     public function client()
     {

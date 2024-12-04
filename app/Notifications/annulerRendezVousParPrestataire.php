@@ -1,15 +1,16 @@
 <?php
 
-// Fichier: app/Notifications/DemandeRendezVousNotification.php
-
 namespace App\Notifications;
 
 use App\Models\RendezVous;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class DemandeRendezVousNotification extends Notification
+class annulerRendezVousParPrestataire extends Notification
 {
+    use Queueable;
+
     protected $rendezVous;
 
     public function __construct(RendezVous $rendezVous)
@@ -36,9 +37,9 @@ class DemandeRendezVousNotification extends Notification
         $heureFin = $this->rendezVous->heureFin; 
         
         return (new MailMessage)
-                    ->subject('Nouvelle demande de rendez-vous')
+                    ->subject('Annulation de rendez-vous')
                     ->greeting('Bonjour ' . $notifiable->name)
-                    ->line('Vous avez reçu une nouvelle demande de rendez-vous.')
+                    ->line('Votre rendez-vous du ' . $this->rendezVous->jour . ' à ' . $this->rendezVous->heureDebut . ' a été annulé par le prestataire.')
                     ->line('Détails du rendez-vous:')
                     ->line('Jour: ' . $jour)
                     ->line('Heure de début: ' . $heureDebut) 
@@ -51,14 +52,15 @@ class DemandeRendezVousNotification extends Notification
                     ->line('Type de rendez-vous: ' . $typeRendezVousName)
                     ->line('Prestataire: ' . $prestataireName)
                     ->line('Statut: ' . $this->rendezVous->statut)
-                    ->action('Voir le rendez-vous', url('/rendezvous/' . $this->rendezVous->id));
+                    ->action('Voir vos rendez-vous', url('/dashboard'))
+                    ->line('Merci d\'avoir utilisé notre service.');
     }
-    
 
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable)
     {
         return [
-            //
+            'rendezVousId' => $this->rendezVous->id,
+            'message' => 'Le rendez-vous a été annulé.',
         ];
     }
 }
