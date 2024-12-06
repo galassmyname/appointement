@@ -38,10 +38,24 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'telephone',
-        'role_id',
+        'role_id', // Ajoutez la colonne role ici
         'is_admin',
         'password',
     ];
+    
+// App\Models\User.php
+
+protected static function booted()
+{
+    static::creating(function ($user) {
+        // Vérifier si le rôle n'est pas défini
+        if (!$user->role_id) {
+            // Attribuer le rôle "Utilisateur" par défaut si non défini
+            $role = Role::where('name', 'Utilisateur')->first();
+            $user->role_id = $role ? $role->id : null; // Si le rôle existe, on l'assigne, sinon on laisse null
+        }
+    });
+}
 
 
     protected $attributes = [

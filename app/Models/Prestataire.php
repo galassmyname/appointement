@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Models\Role;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Prestataire extends Authenticatable implements JWTSubject
@@ -50,6 +53,23 @@ class Prestataire extends Authenticatable implements JWTSubject
     public function rendez_vous()
     {
         return $this->hasMany(RendezVous::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->password)) {
+                // generer un mot de passe aleatoire
+                $randomPassword = Str::random(12);
+                $user->password = Hash::make($randomPassword);
+
+                // envoie le mot de passe par mail
+                Mail::to($user->email)->send(new \App\Mail\PrestatairePasswordMail($user->name, $randomPassword, $user->email));
+
+            }
+        });
     }
 
 }

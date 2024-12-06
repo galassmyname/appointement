@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Spatie\Permission\Models\Role;
 
 
 class UserResource extends Resource
@@ -45,14 +46,11 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                    CheckboxList::make('roles')
-                    ->relationship('roles', 'id') // Utilisez 'id' pour récupérer les rôles par leur identifiant
-                    ->columns(2)
-                    ->helperText('Sélectionnez les rôles.')
-                    ->required(),
-                
+                // On retire le champ role_id du formulaire
+                // La logique du rôle par défaut sera gérée automatiquement dans le modèle
             ]);
     }
+    
 
     public static function beforeSave($record): void
     {

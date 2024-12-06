@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GoogleCalendarController;
+
+
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PrestataireController;
-
-
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +21,7 @@ Route::get('/user', [AuthController::class, 'userProfile'])->middleware('auth:ap
 Route::get('/users', [NotificationController::class, 'index']);
 
 
-
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
 require_once __DIR__.'/prestataire.php';
