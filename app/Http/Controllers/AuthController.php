@@ -11,7 +11,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    // Inscription
+    // La methode pour l'inscription
     public function register(Request $request)
     {
         try {
@@ -45,32 +45,27 @@ class AuthController extends Controller
                 'telephone' => $request->telephone,
                 'password' => Hash::make($request->password),
             ]);
-    
-            // Génération du token JWT
+            
             $token = JWTAuth::fromUser($user);
-    
-            // Retourner une réponse JSON avec le token
+            
             return response()->json([
                 'message' => 'Inscription réussie',
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Renvoyer les erreurs de validation
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // Renvoyer une erreur générale
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
     
 
 
-    // Connexion
+    // CMethode pour la connexion
     public function login(Request $request)
     {
         try {
-            // Validation des informations de connexion avec des messages personnalisés
             $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
@@ -79,56 +74,89 @@ class AuthController extends Controller
                 'email.email' => 'L\'adresse email fournie est invalide.',
                 'password.required' => 'Le champ mot de passe est obligatoire.',
             ]);
-    
-            // Vérification des informations de connexion (tentative de login avec JWT)
-            // if (!$token = JWTAuth::attempt($request->only('email', 'password'))) {
-            //     return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
-            // }
+            
 
             if (!$token = auth('api')->attempt($request->only('email', 'password'))) {
                 return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
             }
             
     
-            // Si la connexion réussit, retourner le token JWT
+          
             return response()->json([
                 'message' => 'Connexion réussie avec succès',
                 'token' => $token
             ]);
     
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Renvoyer les erreurs de validation
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // Renvoyer une erreur générale
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
     
 
 
-    public function me()
+
+    // La  methode pour le refresh token
+    public function refreshToken()
     {
         try {
-            // Récupérer le token depuis l'en-tête Authorization
             $token = JWTAuth::getToken();
     
             if (!$token) {
                 return response()->json(['error' => 'Token non fourni'], 401);
             }
     
-            // Authentifier l'utilisateur à partir du token
+            // Rafraîchir le token
+            $newToken = JWTAuth::refresh($token);
+    
+            // Créer un cookie sécurisé pour le refresh token
+            $cookie = cookie(
+                'refresh_token', 
+                $newToken, // Valeur du refresh token
+                20160, // Expiration en minutes (14 jours)
+                '/', // Chemin
+                null, // Domaine
+                true, // HTTPS uniquement
+                true // HTTP-only
+            );
+    
+            return response()->json([
+                'message' => 'Token rafraîchi avec succès',
+            ])->cookie($cookie);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json(['error' => 'Token invalide'], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['error' => 'Erreur lors du rafraîchissement du token'], 500);
+        }
+    }
+    
+    
+    
+    public function me()
+    {
+        try {
+            
+            $token = JWTAuth::getToken();
+    
+            if (!$token) {
+                return response()->json(['error' => 'Token non fourni'], 401);
+            }
+    
+            
             $user = JWTAuth::authenticate($token);
     
             if (!$user) {
                 return response()->json(['message' => 'Utilisateur non trouvé'], 404);
             }
     
-            // Retourner les informations de l'utilisateur avec le token
+           
             return response()->json([
                 'message' => 'Utilisateur connecté récupéré avec succès',
                 'user' => $user,
-                'token' => $token, // Inclure le token dans la réponse
+                'token' => $token, 
             ]);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Le token a expiré'], 401);
@@ -146,18 +174,31 @@ class AuthController extends Controller
     // Déconnexion
     public function logout()
     {
-        Auth::logout();
-        return response()->json(['message' => 'Vous etes maintenent deconnecter']);
-    }
-
-            // Profil utilisateur
-            public function userProfile()
-            {
-                // Récupérer tous les utilisateurs de la table 'users'
-                $users = User::all();
-            
-                // Retourner la liste des utilisateurs (par exemple, dans une vue ou en JSON)
-                return response()->json($users);
+        try {
+            $token = JWTAuth::getToken();
+    
+            if ($token) {
+                JWTAuth::invalidate($token);
             }
+    
+            // Supprimer le cookie du refresh token
+            $cookie = cookie('refresh_token', '', -1); 
+    
+            return response()->json(['message' => 'Déconnexion réussie'])->cookie($cookie);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+
+    // Profil utilisateur
+    public function userProfile()
+    {
+        
+        $users = User::all();
+            
+        
+        return response()->json($users);
+     }
             
 }

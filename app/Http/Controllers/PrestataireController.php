@@ -486,17 +486,13 @@ class PrestataireController extends Controller
 
         // Mettre à jour la disponibilité pour la rendre à nouveau disponible
         if ($disponibilite) {
-            $disponibilite->estDisponible = true;  // Marquer comme disponible
+            $disponibilite->estDisponible = true;  
             $disponibilite->save();
         }
 
         // Récupérer le client associé au rendez-vous
         $client = User::find($rendezVous->client_id);
 
-        // if ($client) {
-        //     // Envoyer une notification au client pour l'informer de l'annulation
-        //     $client->notify(new AnnulationRendezVousNotification($rendezVous));
-        // }
 
         return response()->json([
             'message' => 'Rendez-vous annulé avec succès',

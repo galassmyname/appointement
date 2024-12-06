@@ -24,9 +24,6 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/disponibilites/{id}', [PrestataireController::class, 'modifierDisponibilite']);
         Route::delete('/disponibilites/{id}', [PrestataireController::class, 'supprimerDisponibilite']);
 
-        
-       // Route::post('/disponibilites', [PrestataireController::class, 'store']);
-
 
         Route::get('/rendezvous', [PrestataireController::class, 'listerRendezVousPrestataire']);
         Route::post('/rendezvous/{rendezVousId}/valider', [PrestataireController::class, 'validerRendezVous']);

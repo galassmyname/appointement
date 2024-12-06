@@ -19,6 +19,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 Route::get('/user', [AuthController::class, 'userProfile'])->middleware('auth:api');
 Route::get('/users', [NotificationController::class, 'index']);
+Route::post('/auth/refresh', [AuthController::class, 'refreshToken']);
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
