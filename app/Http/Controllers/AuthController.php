@@ -21,7 +21,7 @@ class AuthController extends Controller
                     'name' => 'required|string|max:255',
                     'email' => 'required|string|email|max:255|unique:users|regex:/@gmail\.com$/',
                     'telephone' => 'required|string|max:20|unique:users',
-                    'password' => 'required|string|min:6|confirmed',
+                    'password' => 'required|string|min:6',
                 ],
                 [
                     'name.required' => 'Le champ nom est obligatoire.',
@@ -34,7 +34,6 @@ class AuthController extends Controller
                     'telephone.unique' => 'Ce numéro de téléphone est déjà utilisé.',
                     'password.required' => 'Le champ mot de passe est obligatoire.',
                     'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
-                    'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
                 ]
             );
     
