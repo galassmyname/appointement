@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class annulerRendezVousParPrestataire extends Notification
+class AnnulerRendezVousParPrestataire extends Notification
 {
     use Queueable;
 

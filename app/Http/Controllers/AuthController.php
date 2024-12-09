@@ -114,7 +114,7 @@ class AuthController extends Controller
             $cookie = cookie(
                 'refresh_token', 
                 $newToken, // Valeur du refresh token
-                20160, // Expiration en minutes (14 jours)
+                1440, // Expiration en minutes (14 jours)
                 '/', // Chemin
                 null, // Domaine
                 true, // HTTPS uniquement

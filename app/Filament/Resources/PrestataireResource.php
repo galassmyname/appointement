@@ -80,6 +80,10 @@ class PrestataireResource extends Resource
                     ->label('Nom')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('role.name') // Utilise la relation `role` pour accéder au champ `name`
+                    ->label('Role') // Intitulé de la colonne
+                    ->sortable() // Permet le tri
+                    ->searchable(), // Permet la recherche
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->sortable()

@@ -314,6 +314,45 @@ class UserController extends Controller
     
 
 
+    // La methode pour lister les rendez_vous
+    public function listerRendezVous(Request $request)
+    {
+        try {
+            // Authentification de l'utilisateur à partir du token
+            $client = JWTAuth::parseToken()->authenticate();
+    
+            // Récupérer les rendez-vous de l'utilisateur connecté
+            $rendezVous = RendezVous::where('client_id', $client->id)
+            ->with(['type_rendezvous', 'prestataire', 'disponibilite']) // Charger les relations nécessaires
+            ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id') // Joindre la table disponibilités
+            ->orderBy('disponibilites.jour', 'asc') // Trier par le jour depuis disponibilités
+            ->orderBy('heureDebut', 'asc') // Trier aussi par heure de début
+            ->select('rendez_vous.*') // S'assurer de sélectionner uniquement les colonnes de rendez-vous
+            ->get();
+    
+            // Vérifier si des rendez-vous existent
+            if ($rendezVous->isEmpty()) {
+                return response()->json([
+                    'message' => 'Aucun rendez-vous trouvé pour l\'utilisateur connecté.',
+                ], 404);
+            }
+    
+            return response()->json([
+                'message' => 'Liste des rendez-vous récupérée avec succès.',
+                'rendezVous' => $rendezVous,
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur inattendue s\'est produite lors de la récupération des rendez-vous.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    
+    
     // La methode pour annuler un rendez_vous
     public function annulerRendezVous(Request $request, $rendezVousId)
     {
