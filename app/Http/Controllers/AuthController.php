@@ -96,7 +96,7 @@ class AuthController extends Controller
 
 
 
-    // La  methode pour le refresh token
+    // La  methode pour le refresh token d'acces
     public function refreshToken()
     {
         try {
