@@ -416,7 +416,7 @@ class PrestataireController extends Controller
         
 
 
-    //la methode pour lister les rende_vous
+    //la methode pour lister les rende_vous des clients
     public function listerRendezVousPrestataire(Request $request)
     {
         try {
