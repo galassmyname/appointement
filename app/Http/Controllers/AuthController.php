@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Google\Service\ApigeeRegistry\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -84,6 +85,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Connexion réussie avec succès',
                 'token' => $token
+                'user' => auth('api')-> $user,
             ]);
     
         } catch (\Illuminate\Validation\ValidationException $e) {

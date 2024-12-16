@@ -26,6 +26,7 @@ class RendezVousPrestataireNotificationByAdmin extends Notification
 
     public function toMail($notifiable)
     {
+        $jourDisponibilite = $this->rendezvous->disponibilite->jour ?? 'Non spécifié';
         return (new MailMessage)
             ->subject('Nouveau rendez-vous confirmé')
             ->view('emails.prestataireRendezvousByAdmin', [

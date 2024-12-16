@@ -19,11 +19,21 @@
         </div>
 
         <div class="content">
-            <p>Bonjour {{ $prestataire->name }},</p>
+            <p>Bonjour {{ $rendezvous->prestataire->name }},</p>
             <p>Un nouveau rendez-vous a été confirmé avec vous.</p>
-            <p><strong>Client :</strong> {{ $rendezvous->client->name }}</p>
-            <p><strong>Date :</strong> {{ $rendezvous->heureDebut }}</p>
-            <p><strong>Durée :</strong> {{ $rendezvous->duree }} minutes</p>
+            
+            <h3>Détails du rendez-vous :</h3>
+            <ul>
+                <li><strong>Client :</strong> {{ $rendezvous->client->name }}</li>
+                <li><strong>Email du client :</strong> {{ $rendezvous->client->email }}</li>
+                <li><strong>Téléphone du client :</strong> {{ $rendezvous->client->telephone }}</li>
+                <li><strong>Jour de disponibilité :</strong> {{ $jourDisponibilite }}</li>
+                <li><strong>Date et heure de début :</strong> {{ $rendezvous->heureDebut }}</li>
+                <li><strong>Date et heure de fin :</strong> {{ $rendezvous->heureFin }}</li>
+                <li><strong>Type de rendez-vous :</strong> {{ $rendezvous->type_rendezvous->name }}</li>
+                <li><strong>Durée :</strong> {{ $rendezvous->duree }} minutes</li>
+                <li><strong>Statut :</strong> {{ $rendezvous->status }}</li>
+            </ul>
 
             <a href="{{ url('/rendezvous/' . $rendezvous->id) }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Voir les détails</a>
         </div>

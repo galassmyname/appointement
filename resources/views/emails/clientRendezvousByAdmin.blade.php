@@ -22,7 +22,7 @@
             <p>Bonjour {{ $prestataire->name }},</p>
             <p>Un nouveau rendez-vous a été confirmé avec vous.</p>
             <p><strong>Client :</strong> {{ $rendezvous->client->name }}</p>
-            <p><strong>Jour :</strong> {{ $rendezvous->disponobilite_id->jour }}</p>
+            <p><strong>Jour :</strong> {{ $rendezvous->disponibilite->jour ?? 'Non disponible' }}</p>
             <p><strong>Heure de debut :</strong> {{ $rendezvous->heureDebut }}</p>
             <p><strong>Durée :</strong> {{ $rendezvous->duree }} minutes</p>
 

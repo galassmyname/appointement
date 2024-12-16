@@ -64,16 +64,16 @@ class RendezVous extends Model
     // Relation avec Disponibilite
     public function disponibilite()
     {
-        return $this->belongsTo(Disponibilite::class);
+        return $this->belongsTo(Disponibilite::class, 'disponobilite_id');
     }
 
     protected static function booted()
     {
         static::created(function ($rendezVous) {
-            // Envoyer des notifications après la création
             $client = User::find($rendezVous->client_id);
             $prestataire = User::find($rendezVous->prestataire_id);
-
+            //$disponibilite = User::find($rendezVous->disponibilite_id);
+    
             if ($client) {
                 $client->notify(new RendezVousClientNotificationByAdmin($rendezVous));
             }
@@ -82,6 +82,7 @@ class RendezVous extends Model
             }
         });
     }
+    
 
 
     public static function hasConflict($prestataireId, $heureDebut, $heureFin)
