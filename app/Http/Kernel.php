@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Support\Facades\Schedule;
 
 class Kernel extends HttpKernel
 {
@@ -84,6 +85,12 @@ class Kernel extends HttpKernel
         'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
     ];
+
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('reminders:send')->everyMinute();
+    }
+
     
     
 }
