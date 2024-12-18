@@ -21,6 +21,9 @@ class RendezVous extends Model
         'duree', 
         'delaiPreReservation',
         'intervalPlanification',
+        'nombre_jours',
+        'date_debut',
+        'date_fin',
         'dureeAvantAnnulation',
         'disponibilite_id',
         'type_rendezvous_id',
@@ -64,12 +67,15 @@ class RendezVous extends Model
     // Relation avec Disponibilite
     public function disponibilite()
     {
-        return $this->belongsTo(Disponibilite::class, 'disponobilite_id');
+        return $this->belongsTo(Disponibilite::class, 'disponibilite_id');
     }
 
     protected static function booted()
     {
         static::created(function ($rendezVous) {
+            // Charger les relations nécessaires
+            $rendezVous->load(['client', 'prestataire', 'disponibilite', 'type_rendezvous']);
+            
             $client = User::find($rendezVous->client_id);
             $prestataire = User::find($rendezVous->prestataire_id);
             //$disponibilite = User::find($rendezVous->disponibilite_id);
@@ -98,6 +104,4 @@ class RendezVous extends Model
             })
             ->exists();
     }
-    
-    
 }
