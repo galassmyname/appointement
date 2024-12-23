@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prestataire;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -74,8 +75,25 @@ class AuthController extends Controller
                 'password.required' => 'Le champ mot de passe est obligatoire.',
             ]);
 
+            // Vérifiez si l'utilisateur est un "User" ou un "Prestataire"
+            $user = \App\Models\Prestataire::where('email', $request->email)->first();
+            if (!$user) {
+                $user = \App\Models\User::where('email', $request->email)->first();
+            }
 
-            if (!$token = auth('api')->attempt($request->only('email', 'password'))) {
+            // Si aucun utilisateur trouvé, retournez une erreur
+            if (!$user) {
+                return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
+            }
+
+            // Authentifier l'utilisateur selon le modèle trouvé
+            $guard = $user instanceof \App\Models\Prestataire ? 'prestataire' : 'api';
+//            return response()->json([
+//                'guard' => $guard,
+//            ]);
+
+
+            if (!$token = auth($guard)->attempt($request->only('email', 'password'))) {
                 return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
             }
 
@@ -84,7 +102,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Connexion réussie avec succès',
                 'token' => $token,
-                'user' => auth('api')->user(),
+                'user' => auth($guard)->user(),
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
