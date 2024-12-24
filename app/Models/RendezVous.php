@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Mail\StatutRendezVousChange;
 use App\Models\Disponibilite;
 use App\Models\Statistique;
 use App\Notifications\RendezVousClientNotificationByAdmin;
@@ -9,6 +10,9 @@ use App\Notifications\RendezVousPrestataireNotificationByAdmin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
 
 class RendezVous extends Model
 {
@@ -29,7 +33,7 @@ class RendezVous extends Model
         'type_rendezvous_id',
         'client_id',
         'prestataire_id',
-        'status' => 'en attente',
+        'statut' => 'en attente',
         'heureDebut', // Ajouté
         'heureFin',   // Ajouté
     ];
@@ -87,7 +91,49 @@ class RendezVous extends Model
                 $prestataire->notify(new RendezVousPrestataireNotificationByAdmin($rendezVous));
             }
         });
+
+        static::updated(function (RendezVous $rendezVous) {
+            // Vérifiez si le champ 'statut' a été modifié
+            if ($rendezVous->wasChanged('statut')) {
+                // Appeler la méthode pour envoyer les notifications
+                $rendezVous->notifyStatusChange();
+            }
+        });
     }
+
+       // Fonction pour envoyer les notifications par mail
+       public function notifyStatusChange()
+       {
+           // Récupérer le client et le prestataire associés au rendez-vous
+           $client = User::find($this->client_id);
+           $prestataire = User::find($this->prestataire_id);
+       
+           // Vérifier si le client et le prestataire existent
+           if ($client && $prestataire) {
+               // Déterminer le message en fonction du statut
+               if ($this->statut === 'validé') {
+                   $message = "Votre rendez-vous vient d'être validé par l'administrateur.";
+               } elseif ($this->statut === 'annulé') {
+                   $message = "Votre rendez-vous vient d'être annulé par l'administrateur.";
+               }
+       
+               // Envoyer un email au client
+               try {
+                   Mail::to($client->email)->send(new StatutRendezVousChange($this, $client, $message));
+               } catch (\Exception $e) {
+                   Log::error('Erreur lors de l\'envoi de l\'email au client', ['message' => $e->getMessage()]);
+               }
+       
+               // Envoyer un email au prestataire
+               try {
+                   Mail::to($prestataire->email)->send(new StatutRendezVousChange($this, $prestataire, $message));
+               } catch (\Exception $e) {
+                   Log::error('Erreur lors de l\'envoi de l\'email au prestataire', ['message' => $e->getMessage()]);
+               }
+           }
+       }
+       
+   
     
 
 

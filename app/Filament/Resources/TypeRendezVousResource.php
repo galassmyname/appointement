@@ -18,8 +18,9 @@ class TypeRendezVousResource extends Resource
 {
     protected static ?string $model = TypeRendezVous::class;
 
+    protected static ?string $label = 'Appointments-type';
     protected static ?string $navigationIcon = 'heroicon-s-tag';
-    protected static ?string $navigationGroup = 'gestion administrative';
+    protected static ?string $navigationGroup = 'Admin management';
 
     public static function form(Form $form): Form
     {

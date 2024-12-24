@@ -37,6 +37,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'role',
         'telephone',
         'role_id', // Ajoutez la colonne role ici
         'is_admin',
@@ -85,9 +86,14 @@ protected static function booted()
 
 
     
+    // public function role()
+    // {
+    //     return $this->belongsTo(Role::class, 'role', 'name');
+    // }
+
     public function role()
     {
-        return $this->belongsTo(Role::class, 'role', 'name');
+        return $this->belongsTo(Role::class);
     }
         // Méthodes requises par JWTSubject
     public function getJWTIdentifier()

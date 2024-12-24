@@ -56,6 +56,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $disponibilityPermission3 = Permission::firstOrCreate(['name' => 'update: disponibility']);
         $disponibilityPermission4 = Permission::firstOrCreate(['name' => 'delete: disponibility']);
         
+        //Rendez-vous 
         $appointmentPermission1 = Permission::firstOrCreate(['name' => 'list: appointment']);
         $appointmentPermission2 = Permission::firstOrCreate(['name' => 'validate: appointment']);
         $appointmentPermission3 = Permission::firstOrCreate(['name' => 'cancel: appointment']);
