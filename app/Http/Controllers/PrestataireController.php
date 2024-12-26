@@ -47,7 +47,7 @@ class PrestataireController extends Controller
                  'password.required' => 'Le mot de passe est obligatoire.',
                  'password.confirmed' => 'Les mots de passe ne correspondent pas.',
              ]);
-     
+
              // Vérifier si la validation a échoué
              if ($validator->fails()) {
                  return response()->json([
@@ -56,7 +56,7 @@ class PrestataireController extends Controller
                      'errors' => $validator->errors()
                  ], 400);
              }
-     
+
              // Créer le prestataire
              $prestataire = Prestataire::create([
                  'name' => $request->name,
@@ -67,9 +67,9 @@ class PrestataireController extends Controller
                  'role_id' => $request->role_id,
                  'is_admin' => false,
              ]);
-     
+
              $token = Auth::guard('prestataire')->login($prestataire);
-     
+
              return response()->json([
                  'status' => 'success',
                  'message' => 'Inscription réussie.',
@@ -78,7 +78,7 @@ class PrestataireController extends Controller
                      'token' => $token
                  ]
              ], 201);
-     
+
          } catch (\Exception $e) {
              return response()->json([
                  'status' => 'error',
@@ -87,12 +87,12 @@ class PrestataireController extends Controller
              ], 500);
          }
      }
-     
 
 
 
 
-     
+
+
     // Connexion d'un prestataire
     public function prestataireLogin(Request $request)
     {
@@ -106,7 +106,7 @@ class PrestataireController extends Controller
                 'email.email' => 'L\'adresse email fournie est invalide.',
                 'password.required' => 'Le champ mot de passe est obligatoire.',
             ]);
-    
+
             // Tentative d'authentification avec le guard 'prestataire'
             if (!$token = auth('prestataire')->attempt($request->only('email', 'password'))) {
                 return response()->json([
@@ -114,10 +114,10 @@ class PrestataireController extends Controller
                     'message' => 'Email ou mot de passe incorrect.',
                 ], 401);
             }
-    
+
             // Récupération du prestataire authentifié
             $prestataire = auth('prestataire')->user();
-    
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Connexion réussie.',
@@ -126,7 +126,7 @@ class PrestataireController extends Controller
                     'token' => $token,
                 ]
             ], 200);
-    
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => 'error',
@@ -141,25 +141,25 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-    
-    
-    
 
-    
+
+
+
+
     public function refreshToken()
     {
         try {
             $token = JWTAuth::getToken();
-    
+
             if (!$token) {
                 return response()->json(['error' => 'Token non fourni'], 401);
             }
-    
-            
+
+
             $newToken = JWTAuth::refresh($token);
-    
+
             $cookie = cookie(
-                'refresh_token', 
+                'refresh_token',
                 $newToken, // Valeur du refresh token
                 1440, // Expiration en minutes (14 jours)
                 '/', // Chemin
@@ -167,7 +167,7 @@ class PrestataireController extends Controller
                 true, // HTTPS uniquement
                 true // HTTP-only
             );
-    
+
             return response()->json([
                 'message' => 'Token rafraîchi avec succès',
             ])->cookie($cookie);
@@ -181,25 +181,25 @@ class PrestataireController extends Controller
     }
 
 
-    
+
     // Déconnexion d'un prestataire
     public function logout()
     {
         try {
             $token = JWTAuth::getToken();
-    
+
             if ($token) {
-                JWTAuth::invalidate($token); 
+                JWTAuth::invalidate($token);
             }
-    
-            $cookie = cookie('refresh_token', '', -1); 
-    
+
+            $cookie = cookie('refresh_token', '', -1);
+
             return response()->json(['message' => 'Déconnexion réussie'])->cookie($cookie);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
 
 
     // Méthode pour permettre au prestataire de définir ses disponibilités
@@ -225,16 +225,16 @@ class PrestataireController extends Controller
 // Méthode pour permettre au prestataire de définir ses disponibilités
     public function definirDisponibilites(Request $request)
     {
-        
+        $request['jour'] = strtolower($request['jour']);
         $request->validate([
             'jour' => 'required|in:lundi,mardi,mercredi,jeudi,vendredi',
             'heureDebut' => 'required|date_format:H:i',
             'heureFin' => 'required|date_format:H:i|after:heureDebut',
             //'estDisponible' => 'required|boolean',
         ]);
-        
+
         try {
-            
+
             $prestataire = JWTAuth::parseToken()->authenticate();
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['message' => 'Token expiré'], 401);
@@ -252,7 +252,7 @@ class PrestataireController extends Controller
         try {
             $disponibilite = Disponibilite::updateOrCreate(
                 [
-                    'jour' => $request->jour,  
+                    'jour' => $request->jour,
                     'prestataire_id' => $prestataire->id,
                 ],
                 [
@@ -289,22 +289,22 @@ class PrestataireController extends Controller
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['message' => 'Token manquant'], 401);
         }
-    
-        
+
+
         if (!$prestataire) {
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
-    
+
         try {
-            
+
             $disponibilites = Disponibilite::where('prestataire_id', $prestataire->id)->get();
-    
+
             // Si aucune disponibilité n'est trouvée
             if ($disponibilites->isEmpty()) {
                 return response()->json(['message' => 'Aucune disponibilité trouvée pour ce prestataire'], 404);
             }
-    
-            
+
+
             return response()->json([
                 'message' => 'Disponibilités récupérées avec succès',
                 'disponibilites' => $disponibilites
@@ -317,14 +317,14 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-    
+
 
 
     //Methode pour modifier une disponibilite
     public function modifierDisponibilite(Request $request, $id)
     {
         try {
-            
+
             $prestataire = JWTAuth::parseToken()->authenticate();
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['message' => 'Token expiré'], 401);
@@ -333,28 +333,28 @@ class PrestataireController extends Controller
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['message' => 'Token manquant'], 401);
         }
-    
-        
+
+
         if (!$prestataire) {
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
-    
+
         try {
-            
+
             $disponibilite = Disponibilite::find($id);
-    
-            
+
+
             if (!$disponibilite) {
                 return response()->json(['message' => 'Disponibilité introuvable'], 404);
             }
-    
+
             if ($disponibilite->prestataire_id != $prestataire->id) {
                 return response()->json(['message' => 'Vous ne pouvez modifier que vos propres disponibilités'], 403);
             }
-    
-            
+
+
             $disponibilite->update($request->all());
-    
+
             return response()->json([
                 'message' => 'Disponibilité modifiée avec succès',
                 'disponibilite' => $disponibilite
@@ -367,11 +367,11 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     //Methode pour supprimer un crenaux horaire
     public function supprimerDisponibilite($id)
     {
@@ -384,26 +384,26 @@ class PrestataireController extends Controller
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['message' => 'Token manquant'], 401);
         }
-    
-        
+
+
         if (!$prestataire) {
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
-    
+
         try {
             $disponibilite = Disponibilite::find($id);
 
             if (!$disponibilite) {
                 return response()->json(['message' => 'Disponibilité introuvable'], 404);
             }
-    
+
             if ($disponibilite->prestataire_id != $prestataire->id) {
                 return response()->json(['message' => 'Vous ne pouvez supprimer que vos propres disponibilités'], 403);
             }
-    
-            
+
+
             $disponibilite->delete();
-    
+
             return response()->json(['message' => 'Disponibilité supprimée avec succès']);
         } catch (\Exception $e) {
             return response()->json([
@@ -413,7 +413,7 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-        
+
 
 
     //la methode pour lister les rende_vous des clients
@@ -421,13 +421,13 @@ class PrestataireController extends Controller
     {
         try {
             $prestataire = JWTAuth::parseToken()->authenticate();
-    
+
             // if (!$prestataire || $prestataire->role !== 'prestataire') {
             //     return response()->json([
             //         'message' => 'Accès non autorisé.',
             //     ], 403);
             // }
-    
+
             $rendezVous = RendezVous::where('rendez_vous.prestataire_id', $prestataire->id)  // Précisez la table pour prestataire_id
             ->with(['type_rendezvous', 'client', 'disponibilite'])
             ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')
@@ -435,8 +435,8 @@ class PrestataireController extends Controller
             ->orderBy('disponibilites.heureDebut', 'asc')  // Qualifiez 'heureDebut' de la table 'disponibilites'
             ->select('rendez_vous.*')
             ->get();
-        
-    
+
+
             if ($rendezVous->isEmpty()) {
                 return response()->json([
                     'debug' => 'Aucun rendez-vous trouvé.',
@@ -444,12 +444,12 @@ class PrestataireController extends Controller
                     'prestataire_id' => $prestataire->id,
                 ], 404);
             }
-    
+
             return response()->json([
                 'debug' => 'Rendez-vous récupérés avec succès.',
                 'rendezVous' => $rendezVous,
             ], 200);
-    
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -458,14 +458,14 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-    
-    
-    
+
+
+
 
     //Methode de validation de rendez-vous
     public function validerRendezVous(Request $request, $rendezVousId)
     {
-        
+
         try {
             $prestataire = JWTAuth::parseToken()->authenticate();
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -478,25 +478,25 @@ class PrestataireController extends Controller
 
         $rendezVous = RendezVous::find($rendezVousId);
 
-        
+
         if (!$rendezVous) {
             return response()->json(['message' => 'Rendez-vous non trouvé'], 404);
         }
 
-        
+
         if ($rendezVous->prestataire_id !== $prestataire->id) {
             return response()->json(['message' => 'Vous n\'êtes pas autorisé à valider ce rendez-vous'], 403);
         }
 
-        
+
         $rendezVous->statut = 'validé';
         $rendezVous->save();
 
-        
+
         $client = User::find($rendezVous->client_id);
         //Mail::to($client->email)->send(new ValiderRendezVousParPrestataire($rendezVous));
         $client->notify(new ValiderRendezVousParPrestataire($rendezVous));
-    
+
 
         return response()->json([
             'message' => 'Rendez-vous validé avec succès',
@@ -521,38 +521,38 @@ class PrestataireController extends Controller
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['message' => 'Token manquant'], 401);
         }
-    
+
         // Récupérer le rendez-vous via son ID
         $rendezVous = RendezVous::find($rendezVousId);
-    
+
         // Vérifier si le rendez-vous existe
         if (!$rendezVous) {
             return response()->json(['message' => 'Rendez-vous non trouvé'], 404);
         }
-    
+
         // Vérifier si le prestataire connecté est bien celui qui a créé ce rendez-vous
         if ($rendezVous->prestataire_id !== $prestataire->id) {
             return response()->json(['message' => 'Vous n\'êtes pas autorisé à annuler ce rendez-vous'], 403);
         }
-    
+
         // Mettre à jour le statut du rendez-vous pour le marquer comme annulé
         $rendezVous->statut = 'annulé';
         $rendezVous->save();
-    
+
         // Récupérer les informations du client associé au rendez-vous
         $client = User::find($rendezVous->client_id);
-    
-        
+
+
         //Mail::to($client->email)->send(new AnnulerRendezVousParPrestataire($rendezVous));
         $client->notify(new AnnulerRendezVousParPrestataire($rendezVous));
-    
-    
+
+
         // Retourner la réponse avec le rendez-vous annulé
         return response()->json([
             'message' => 'Rendez-vous annulé avec succès',
             'rendezVous' => $rendezVous
         ]);
     }
-    
+
 }
 
