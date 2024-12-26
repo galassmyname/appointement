@@ -102,7 +102,9 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Connexion réussie avec succès',
                 'token' => $token,
+
                 'user' => auth($guard)->user(),
+
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {

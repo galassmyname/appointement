@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Models\Disponibilite;
-use App\Models\Prestataire;
+
 use App\Models\RendezVous;
 use App\Models\TypeRendezVous;
 use App\Models\User; // Client
@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -23,12 +24,15 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+
+
 class AppointmentResource extends Resource
 {
     protected static ?string $model = RendezVous::class;
 
+    protected static ?string $label = 'Appointments';
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationGroup = 'gestion administrative';
+    protected static ?string $navigationGroup = 'Admin management';
 
     // Formulaire de création/édition
     public static function form(Forms\Form $form): Forms\Form
@@ -183,13 +187,13 @@ class AppointmentResource extends Resource
                 ->reactive(),
                 
         
-                Select::make('status')
-                    ->label('Statut')
-                    ->options([
-                        'en attente' => 'En attente',
-                        'validé' => 'validé',
-                    ])
-                    ->required(),
+                // Select::make('statut')
+                //     ->label('Statut')
+                //     ->options([
+                //         'en attente' => 'En attente',
+                //         'validé' => 'validé',
+                //     ])
+                //     ->required(),
 
 
                 TextInput::make('conflit')
@@ -205,6 +209,7 @@ class AppointmentResource extends Resource
 
     
     // Table des rendez-vous
+
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
@@ -220,7 +225,7 @@ class AppointmentResource extends Resource
                 TextColumn::make('type_rendezvous.nomService')
                     ->label('Type de Rendez-vous')
                     ->sortable(),
-
+    
                 TextColumn::make('heureDebut')
                     ->label('Heure de début')
                     ->dateTime(),
@@ -228,30 +233,70 @@ class AppointmentResource extends Resource
                 TextColumn::make('heureFin')
                     ->label('Heure de fin')
                     ->dateTime(),
-
+    
                 TextColumn::make('statut')
                     ->label('Statut')
                     ->sortable()
                     ->searchable(),
-
-                // BooleanColumn::make('is_admin')
-                //     ->label('Admin')
-                //     ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->bulkActions([ 
-                Tables\Actions\BulkActionGroup::make([ 
-                    Tables\Actions\DeleteBulkAction::make() 
-                        ->label('Supprimer la sélection'), 
-                ]),
+                Tables\Actions\ActionGroup::make([
+                    // Action "Annuler" pour le statut "validé"
+                    Tables\Actions\Action::make('annuler')
+                        ->label('Annuler')
+                        ->color('danger')
+                        ->icon('heroicon-o-x-circle')
+                        ->visible(fn ($record) => $record->statut === 'validé')
+                        ->action(function ($record) {
+                            $record->statut = 'annulé';
+                            $record->save();
+                            Log::info('Rendez-vous annulé : ' . $record->id);
+                        })
+                        ->requiresConfirmation(),
+    
+                    // Action "Valider" pour les statuts "annulé" ou "en attente"
+                    Tables\Actions\Action::make('valider')
+                        ->label('Valider')
+                        ->color('success')
+                        ->icon('heroicon-o-check-circle')
+                        ->visible(fn ($record) => $record->statut === 'annulé' || $record->statut === 'en attente')
+                        ->action(function ($record) {
+                            $record->statut = 'validé';
+                            $record->save();
+                            Log::info('Rendez-vous validé : ' . $record->id);
+                        })
+                        ->requiresConfirmation(),
+    
+                    // Action "Annuler" pour le statut "en attente"
+                    Tables\Actions\Action::make('annuler_en_attente')
+                        ->label('Annuler')
+                        ->color('danger')
+                        ->icon('heroicon-o-x-circle')
+                        ->visible(fn ($record) => $record->statut === 'en attente')
+                        ->action(function ($record) {
+                            $record->statut = 'annulé';
+                            $record->save();
+                            Log::info('Rendez-vous annulé : ' . $record->id);
+                        })
+                        ->requiresConfirmation(),
+    
+                    // Action de modification
+                    Tables\Actions\EditAction::make()
+                        ->label('Modifier'),
+    
+                    // Action de suppression
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Supprimer')
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation(),
+                ])//->icon('heroicon-o-dots-vertical') // Icône pour le menu de trois points
+                ->tooltip('Actions') // Info-bulle pour le menu
             ]);
     }
+        
 
     public static function getRelations(): array
     {

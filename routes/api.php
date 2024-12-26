@@ -7,10 +7,13 @@ use App\Http\Controllers\GoogleCalendarController;
 
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PrestataireController;
+use App\Http\Controllers\Simple;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 
+Route::get('/simple', [Simple::class, 'index']);
 
 
 

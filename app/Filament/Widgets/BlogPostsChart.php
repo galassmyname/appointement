@@ -6,7 +6,7 @@ use Filament\Widgets\ChartWidget;
  
 class BlogPostsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Taux d\'évolution des rendez_vous par mois ';
+    protected static ?string $heading = 'Rate of change of appointments per month';
     protected static string $color = 'info';
     protected static ?string $pollingInterval = '3s';
     protected static bool $isLazy = \true;
@@ -15,7 +15,7 @@ class BlogPostsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Blog posts created',
+                    'label' => 'appointments created',
                     'data' => [0, 10, 5, 2, 21, 32, 45, 74, 65, 45, 77, 89],
                     'backgroundColor' => '#36A2EB',
                     'borderColor' => '#9BD0F5',
