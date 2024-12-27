@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/(.*)"
+      }
+    ],
+    "env": {
+      "APP_ENV": "production",
+      "APP_DEBUG": "false",
+      "APP_URL": "https://127.0.0.1/8000",
+      "APP_KEY": "base64:ljUTH2TNK+xvpFysQiNAzrWseGkV+93vrivXPTwlgAY"
+    }
+  }
+  

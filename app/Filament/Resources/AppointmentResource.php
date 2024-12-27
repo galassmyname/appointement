@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Models\Disponibilite;
-use App\Models\Prestataire;
+
 use App\Models\RendezVous;
 use App\Models\TypeRendezVous;
 use App\Models\User; // Client

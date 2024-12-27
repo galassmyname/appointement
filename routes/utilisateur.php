@@ -16,15 +16,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/listerCreneauxDispo', [UserController::class, 'listerCreneauDispo']);
+
     //Route::post('/demandeRendezVous/{disponibiliteId}', [UserController::class, 'demanderRendezVous']);
-    Route::get('/rendezvous', [UserController::class, 'listerRendezVous']);   
+    Route::get('/rendezvous', [UserController::class, 'listerRendezVous']);
+    //les types de rendez vous
+    Route::get('/listerTypeDeRV', [UserController::class, 'listerTypeDeRV']);
     Route::post('/rendezvous/{rendezVousId}/annuler', [UserController::class, 'annulerRendezVous']);
 
 
 
 
     // les routes pour le processus de demande de rendez-vous
-    Route::get('disponibilitesChoisie/{id}', [UserController::class, 'DisponibilitesPrestataireChoisi']);// pour lister les disponibilites d'un prestataires       
+    Route::get('disponibilitesChoisie/{id}', [UserController::class, 'DisponibilitesPrestataireChoisi']);// pour lister les disponibilites d'un prestataires
     Route::get('/listeDisponibilites', [UserController::class, 'listerDisponibilitesPrestataires']);// pour lister les disponi bilites de tout les prestataires
     Route::post('/dureeRendezvous/{prestataireId}', [UserController::class, 'obtenirPlagesDisponibles']);// pres avoire choisi une disponibilites pour determiner sa duree de rendez_vous
     Route::post('/demandeRendezVous/{prestataireId}', [UserController::class, 'demanderRendezVous']);// demander un rendez_vous
