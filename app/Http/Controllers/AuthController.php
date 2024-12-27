@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Prestataire;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +36,22 @@ class AuthController extends Controller
                     'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
                 ]
             );
-
+            // Vérifier si l'email existe dans la table `prestataires`
+            $existsEmailInPrestataires = \App\Models\Prestataire::where('email', $request->email)->exists();
+            $existsTelInPrestataires = \App\Models\Prestataire::where('telephone', $request->telephone)->exists();
+            if($existsEmailInPrestataires && $existsTelInPrestataires) {
+                return response()->json(['errors' =>
+                    ["Cet email est déjà utilisé par un prestataire.", "Ce telephone est déjà utilisé par un prestataire."]],
+                    422);
+            }
+            if($existsEmailInPrestataires){
+                    return response()->json(['errors' => ["Cet email est déjà utilisé par un prestataire."] ]
+                        , 422);
+                }
+            if($existsTelInPrestataires){
+                return response()->json(['errors' => ["Ce telephone est déjà utilisé par un prestataire."] ]
+                    , 422);
+            }
             // Création de l'utilisateur
             $user = User::create([
                 'name' => $request->name,
@@ -196,10 +210,11 @@ class AuthController extends Controller
     {
         try {
             $token = JWTAuth::getToken();
-
-            if ($token) {
-                JWTAuth::invalidate($token);
+            if (!$token) {
+                return response()->json(['message' => 'Aucun token trouvé'], 400);
             }
+            JWTAuth::invalidate($token);
+
 
             // Supprimer le cookie du refresh token
             $cookie = cookie('refresh_token', '', -1);
