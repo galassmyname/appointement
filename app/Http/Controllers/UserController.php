@@ -403,6 +403,7 @@ class UserController extends Controller
     //     ], 201);
     // }
     
+    //  La methode pour demander une rendez_vous 
     public function demanderRendezVous(Request $request)
     {
         // Validation des données d'entrée
