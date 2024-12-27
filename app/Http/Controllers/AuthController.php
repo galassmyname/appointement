@@ -41,15 +41,15 @@ class AuthController extends Controller
             $existsTelInPrestataires = \App\Models\Prestataire::where('telephone', $request->telephone)->exists();
             if($existsEmailInPrestataires && $existsTelInPrestataires) {
                 return response()->json(['errors' =>
-                    ["Cet email est déjà utilisé par un prestataire.", "Ce telephone est déjà utilisé par un prestataire."]],
+                    ["Cet email est déjà utilisé par un utilisateur.", "Ce telephone est déjà utilisé par un utilisateur."]],
                     422);
             }
             if($existsEmailInPrestataires){
-                    return response()->json(['errors' => ["Cet email est déjà utilisé par un prestataire."] ]
+                    return response()->json(['errors' => ["Cet email est déjà utilisé par un utilisateur."] ]
                         , 422);
                 }
             if($existsTelInPrestataires){
-                return response()->json(['errors' => ["Ce telephone est déjà utilisé par un prestataire."] ]
+                return response()->json(['errors' => ["Ce telephone est déjà utilisé par un utilisateur."] ]
                     , 422);
             }
             // Création de l'utilisateur
