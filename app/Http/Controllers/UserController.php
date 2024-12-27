@@ -23,7 +23,16 @@ class UserController extends Controller
 {
 
 
-
+    public function listerTypeDeRV()
+    {
+        try {
+            return response()->json(["typeRendezVous" => TypeRendezVous::all()]);
+        }catch (\Exception $exception){
+            return response()->json([
+                $exception->getMessage()
+            ],422);
+        }
+    }
     // La methode pour lister les disponibilite d'un prestataire
     public function DisponibilitesPrestataireChoisi($prestataire_id)
     {
