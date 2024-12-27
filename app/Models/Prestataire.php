@@ -55,6 +55,11 @@ class Prestataire extends Authenticatable implements JWTSubject
         return $this->hasMany(RendezVous::class);
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'prestataire_id');
+    }
+
     protected static function boot()
     {
         parent::boot();

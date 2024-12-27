@@ -74,8 +74,37 @@ class RendezVous extends Model
         return $this->belongsTo(Disponibilite::class, 'disponibilite_id');
     }
 
+    // protected static function booted()
+    // {
+    //     parent::booted();
+    
+    //     static::deleting(function ($rendezVous) {
+    //         // Charger le prestataire lié au rendez-vous
+    //         $prestataire = $rendezVous->prestataire;
+    
+    //         if ($prestataire) {
+    //             // Supprimer toutes les réservations liées au prestataire
+    //             $prestataire->reservations()->delete();
+    //         }
+    //     });
+    // }
+    
+
+
     protected static function booted()
     {
+        parent::booted();
+    
+        static::deleting(function ($rendezVous) {
+            // Charger le prestataire lié au rendez-vous
+            $prestataire = $rendezVous->prestataire;
+    
+            if ($prestataire) {
+                // Supprimer toutes les réservations liées au prestataire
+                $prestataire->reservations()->delete();
+            }
+        });
+
         static::created(function ($rendezVous) {
             // Charger les relations nécessaires
             $rendezVous->load(['client', 'prestataire', 'disponibilite', 'type_rendezvous']);
