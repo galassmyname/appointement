@@ -33,7 +33,7 @@ class UserResource extends Resource
 
     //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'gestion administrative';
+    protected static ?string $navigationGroup = 'Admin management';
 
     public static function form(Form $form): Form
     {
@@ -71,39 +71,40 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\BooleanColumn::make('is_admin')
-                    ->boolean()
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('roles.name')
-                    ->sortable()
-                    ->searchable(),
+                // Tables\Columns\BooleanColumn::make('is_admin')
+                //     ->boolean()
+                //     ->sortable()
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('role')
+                //     ->sortable()
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('deleted_at')
-                    ->dateTime('d-M-Y')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('created_at')
+                // Tables\Columns\TextColumn::make('deleted_at')
+                //     ->dateTime('d-M-Y')
+                //     ->sortable()
+                //     ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label("registered on")
                     ->dateTime('d-M-Y')
                     ->sortable()
                     ->searchable(),
             ])
             ->filters([
-                TrashedFilter::make(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\Filter::make('Non-Admins')
+                    ->query(fn (Builder $query) => $query->where('is_admin', '!=', 1))
+                    ->default(), // Ce filtre est appliqué par défaut
             ]);
+            // ->actions([
+            //     Tables\Actions\EditAction::make(),
+            //     Tables\Actions\DeleteAction::make(),
+            // ])
+            // ->bulkActions([
+            //     Tables\Actions\DeleteBulkAction::make(),
+            // ]);
     }
-
     public static function getRelations(): array
     {
         return [];
