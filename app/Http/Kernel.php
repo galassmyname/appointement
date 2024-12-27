@@ -91,6 +91,6 @@ class Kernel extends HttpKernel
         $schedule->command('reminders:send')->everyMinute();
     }
 
-    
-    
+
+
 }
