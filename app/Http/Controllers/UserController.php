@@ -15,7 +15,6 @@ use App\Notifications\DemandeRendezVousNotification; // Import de la notificatio
 use App\Notifications\RendezVousAnnuleNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Tymon\JWTAuth\Facades\JWTAuth;
 //use prestataire;
@@ -213,49 +212,15 @@ class UserController extends Controller
         }
 
         // Retourner les plages horaires calculées
-        return response()->json(['data' => $plagesHoraires], 200);
+        return response()->json([ 'disponibilite_id' => $disponibilite->id,
+            'data' => $plagesHoraires], 200);
     }
 
 
     // La methode pour demander une rendez_vous sur un crenaux horaire percis
-    
     // public function demanderRendezVous(Request $request)
     // {
     //     // Validation des données d'entrée
-
-    //     try {
-    //         $request->validate([
-    //             'disponibilite_id' => 'required|exists:disponibilites,id',
-    //             'type_rendezvous_id' => 'required|exists:type_rendez_vous,id',
-    //             'duree' => 'required|integer|min:15',
-    //             'delaiPreReservation' => 'required|integer|min:0',
-    //             'intervalPlanification' => 'required|integer|min:0',
-    //             'dureeAvantAnnulation' => 'required|integer|min:0',
-    //             'heureDebut' => 'required|date_format:H:i',
-    //         ]);
-    //         Log::info('Validation des données réussie');
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur de validation : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur dans les données d\'entrée.',
-    //             'error' => $e->getMessage(),
-    //         ], 400);
-    //     }
-        
-    //     try {
-    //         $client = JWTAuth::parseToken()->authenticate();
-    //         Log::info('Utilisateur authentifié', ['client_id' => $client->id]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur d\'authentification : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Authentification échouée.',
-    //             'error' => $e->getMessage(),
-    //         ], 401);
-    //     }
-    
-    //     try {
     //     $request->validate([
     //         'disponibilite_id' => 'required|exists:disponibilites,id',
     //         'type_rendezvous_id' => 'required|exists:type_rendez_vous,id',
@@ -272,27 +237,15 @@ class UserController extends Controller
     //         // Récupérer la disponibilité
     //         $disponibilite = Disponibilite::with('prestataire')->find($request->disponibilite_id);
     //         if (!$disponibilite || !$disponibilite->estDisponible) {
-    //             Log::warning('Disponibilité invalide ou indisponible', ['disponibilite_id' => $request->disponibilite_id]);
     //             return response()->json(['message' => 'La disponibilité sélectionnée est indisponible.'], 404);
     //         }
-    //         Log::info('Disponibilité récupérée', ['disponibilite_id' => $disponibilite->id]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de la récupération de la disponibilité : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur lors de la récupération de la disponibilité.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    
-    //     try {
+
     //         // Vérification de la durée demandée
     //         $heureDebut = strtotime($disponibilite->heureDebut);
     //         $heureFin = strtotime($disponibilite->heureFin);
     //         $dureeDisponibilite = ($heureFin - $heureDebut) / 60;
 
     //         if ($request->duree > $dureeDisponibilite) {
-    //             Log::warning('Durée demandée trop longue', ['dureeDemandee' => $request->duree, 'dureeDisponible' => $dureeDisponibilite]);
     //             return response()->json([
     //                 'message' => 'La durée demandée dépasse la durée disponible pour cette disponibilité.',
     //                 'details' => [
@@ -301,31 +254,6 @@ class UserController extends Controller
     //                 ]
     //             ], 400);
     //         }
-    //         Log::info('Durée demandée valide', ['duree' => $request->duree]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur de validation de la durée : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur de validation de la durée.',
-    //             'error' => $e->getMessage(),
-    //         ], 400);
-    //     }
-    
-    //     try {
-    //         // Calcul de l'heure de fin à partir de l'heure de début et de la durée
-    //         $heureDebutDemandee = strtotime($request->heureDebut);
-    //         $heureFinDemandee = $heureDebutDemandee + ($request->duree * 60);
-    //         Log::info('Heure de fin calculée', ['heureDebut' => $request->heureDebut, 'heureFin' => date('H:i', $heureFinDemandee)]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur de calcul de l\'heure de fin : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur de calcul de l\'heure de fin.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    
-    //     try {
 
     //         // Calcul de l'heure de fin à partir de l'heure de début et de la durée
     //         $heureDebutDemandee = strtotime($request->heureDebut);
@@ -343,27 +271,12 @@ class UserController extends Controller
     //                                         });
     //                                 })->exists();
 
-            
-
     //         if ($conflit) {
-    //             Log::warning('Conflit de réservation', ['heureDebutDemandee' => date('H:i', $heureDebutDemandee), 'heureFinDemandee' => date('H:i', $heureFinDemandee)]);
     //             return response()->json([
     //                 'message' => 'Le créneau horaire est déjà réservé. Veuillez choisir un autre créneau.',
     //             ], 409);
     //         }
-  
-    //         Log::info('Aucun conflit trouvé');
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de la vérification des conflits : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur lors de la vérification des conflits.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    
-    //     try {
-  
+
     //         // Création de la réservation
     //         $reservation = Reservation::create([
     //             'jour' => $disponibilite->jour,
@@ -372,17 +285,7 @@ class UserController extends Controller
     //             'prestataire_id' => $disponibilite->prestataire_id,
     //             'client_id' => $client->id,
     //         ]);
-    //         Log::info('Réservation créée', ['reservation_id' => $reservation->id]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de la création de la réservation : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur lors de la création de la réservation.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    
-    //     try {
+
     //         // Création du rendez-vous
     //         $rendezVous = RendezVous::create([
     //             'duree' => $request->duree,
@@ -398,30 +301,6 @@ class UserController extends Controller
     //             'heureFin' => date('H:i', $heureFinDemandee),
     //             'statut' => 'en attente',
     //         ]);
-    //         Log::info('Rendez-vous créé', ['rendezvous_id' => $rendezVous->id]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de la création du rendez-vous : ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur lors de la création du rendez-vous.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    
-    //     try {
-    //         // Notification au prestataire
-    //         $disponibilite->prestataire->notify(new DemandeRendezVousNotification($rendezVous));
-    //         Log::info('Notification envoyée au prestataire', ['prestataire_id' => $disponibilite->prestataire_id]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de l\'envoi de la notification : ' . $e->getMessage());
-    //     }
-    
-    //     try {
-    //         if ($rendezVous->statut === 'valide') {
-    //             $heureDebut = Carbon::parse($rendezVous->heureDebut, $rendezVous->jour);
-    //             $delaiAvantNotification = $heureDebut->subMinutes(60);
-    
-
 
     //         // Notification au prestataire
     //         $disponibilite->prestataire->notify(new DemandeRendezVousNotification($rendezVous));
@@ -432,7 +311,6 @@ class UserController extends Controller
 
     //             // Planifier l'envoi de l'email
     //             NotifyClientAboutRendezVous::dispatch($rendezVous)->delay($delaiAvantNotification);
-    //             Log::info('Notification client planifiée', ['rendezvous_id' => $rendezVous->id]);
     //         }
     //         return response()->json([
     //             'message' => 'Votre demande de rendez-vous a été enregistrée avec succès.',
@@ -441,17 +319,13 @@ class UserController extends Controller
     //         ], 201);
 
     //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de la planification de la notification : ' . $e->getMessage());
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Une erreur inattendue s\'est produite lors de la demande de rendez-vous.',
+    //             'error' => $e->getMessage()
+    //         ], 500);
     //     }
-    
-    //     return response()->json([
-    //         'message' => 'Votre demande de rendez-vous a été enregistrée avec succès.',
-    //         'reservation' => $reservation,
-    //         'rendezVous' => $rendezVous
-    //     ], 201);
     // }
-    
-    //  La methode pour demander une rendez_vous 
     public function demanderRendezVous(Request $request)
     {
         // Validation des données d'entrée
@@ -556,11 +430,11 @@ class UserController extends Controller
             if ($rendezVous->statut === 'valide') {
                 $heureDebut = Carbon::parse($rendezVous->heureDebut, $rendezVous->jour);
                 $delaiAvantNotification = $heureDebut->subMinutes(60);
-            
+
                 // Planifier l'envoi de l'email
                 NotifyClientAboutRendezVous::dispatch($rendezVous)->delay($delaiAvantNotification);
             }
-            
+
             return response()->json([
                 'message' => 'Votre demande de rendez-vous a été enregistrée avec succès.',
                 'reservation' => $reservation,
@@ -577,25 +451,6 @@ class UserController extends Controller
     }
 
 
-
-
-
-        if ($rendezVous->statut === 'valide') {
-            $heureDebut = Carbon::parse($rendezVous->heureDebut, $rendezVous->jour);
-            $delaiAvantNotification = $heureDebut->subMinutes(60);
-
-            // Planifier l'envoi de l'email
-            NotifyClientAboutRendezVous::dispatch($rendezVous)->delay($delaiAvantNotification);
-        }
-
-        return response()->json([
-            'message' => 'Votre demande de rendez-vous a été enregistrée avec succès.',
-            'reservation' => $reservation,
-            'rendezVous' => $rendezVous
-        ], 201);
-
-
-
     // La methode pour lister les rendez_vous
     public function listerRendezVous()
     {
@@ -605,12 +460,12 @@ class UserController extends Controller
 
             // Récupérer les rendez-vous de l'utilisateur connecté
             $rendezVous = RendezVous::where('client_id', $client->id)
-            ->with(['type_rendezvous', 'prestataire', 'disponibilite']) // Charger les relations nécessaires
-            ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id') // Joindre la table disponibilités
-            ->orderBy('disponibilites.jour', 'asc') // Trier par le jour depuis disponibilités
-            ->orderBy('heureDebut', 'asc') // Trier aussi par heure de début
-            ->select('rendez_vous.*') // S'assurer de sélectionner uniquement les colonnes de rendez-vous
-            ->get();
+                ->with(['type_rendezvous', 'prestataire', 'disponibilite']) // Charger les relations nécessaires
+                ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id') // Joindre la table disponibilités
+                ->orderBy('disponibilites.jour', 'asc') // Trier par le jour depuis disponibilités
+                ->orderBy('heureDebut', 'asc') // Trier aussi par heure de début
+                ->select('rendez_vous.*') // S'assurer de sélectionner uniquement les colonnes de rendez-vous
+                ->get();
 
             // Vérifier si des rendez-vous existent
             if ($rendezVous->isEmpty()) {
@@ -667,8 +522,8 @@ class UserController extends Controller
 
 
         $disponibilite = Disponibilite::where('date', $rendezVous->date)
-                                    ->where('heureDebut', $rendezVous->heureDebut)
-                                    ->first();
+            ->where('heureDebut', $rendezVous->heureDebut)
+            ->first();
 
         if ($disponibilite) {
             $disponibilite->estDisponible = true;
