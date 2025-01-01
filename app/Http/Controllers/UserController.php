@@ -212,7 +212,8 @@ class UserController extends Controller
         }
 
         // Retourner les plages horaires calculées
-        return response()->json(['data' => $plagesHoraires], 200);
+        return response()->json([ 'disponibilite_id' => $disponibilite->id,
+            'data' => $plagesHoraires], 200);
     }
 
 
