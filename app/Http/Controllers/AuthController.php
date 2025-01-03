@@ -157,6 +157,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Token rafraîchi avec succès',
+                'token' => $newToken,
             ])->cookie($cookie);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
