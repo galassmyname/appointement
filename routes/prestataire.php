@@ -21,6 +21,7 @@ Route::prefix('prestataire')->group(function () {
 Route::middleware('auth:prestataire')->group(function () {
     Route::prefix('prestataire')->group(function () {
         Route::post('/disponibilites', [PrestataireController::class, 'definirDisponibilites']);
+        Route::get('/disponibilites/{jour}', [PrestataireController::class, 'getDisponibilite']);
         Route::get('/listedisponibilites', [PrestataireController::class, 'listerDisponibilites']);
         Route::put('/disponibilites/{id}', [PrestataireController::class, 'modifierDisponibilite']);
         Route::delete('/disponibilites/{id}', [PrestataireController::class, 'supprimerDisponibilite']);
