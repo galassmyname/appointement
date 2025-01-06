@@ -581,15 +581,15 @@ class PrestataireController extends Controller
         try {
             // Authentifier le prestataire à partir du token JWT
             $prestataire = JWTAuth::parseToken()->authenticate();
-    
+
             // Récupérer le rendez-vous avec les informations liées (type, client, disponibilité)
             $rendezVous = RendezVous::where('rendez_vous.prestataire_id', $prestataire->id)  // Filtrer par l'ID du prestataire
-                ->with(['type_rendezvous', 'client', 'disponibilite'])  // Charger les relations
-                ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')  // Joindre la table 'disponibilites'
                 ->where('rendez_vous.id', $id)  // Filtrer par l'ID du rendez-vous
-                ->select('rendez_vous.*', 'disponibilites.*')  // Sélectionner les colonnes nécessaires
+                ->with(['type_rendezvous', 'client', 'disponibilite','prestataire'])  // Charger les relations
+                ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')  // Joindre la table 'disponibilites'
+                ->select('rendez_vous.*')  // Sélectionner les colonnes nécessaires
                 ->first();  // Récupérer le premier (et unique) résultat
-    
+
             // Vérifier si le rendez-vous existe
             if (!$rendezVous) {
                 return response()->json([
@@ -597,7 +597,7 @@ class PrestataireController extends Controller
                     'message' => 'Rendez-vous non trouvé ou vous n\'êtes pas autorisé à accéder à ce rendez-vous.'
                 ], 403);  // 403 Forbidden si le prestataire n'a pas accès
             }
-    
+
             // Retourner les détails du rendez-vous
             return response()->json([
                 'status' => 'success',
@@ -612,7 +612,7 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-    
+
 
 
 }
