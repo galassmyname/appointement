@@ -271,6 +271,27 @@ class PrestataireController extends Controller
         ]);
     }
 
+    // Récupérer une disponibilité d'un prestataire spécifique en fonction du jour
+    public function getDisponibilite($jour)
+    {
+        try {
+            $prestataire = JWTAuth::parseToken()->authenticate();
+            if (!$prestataire) {
+                return response()->json(['error' => 'Token invalide ou utilisateur non trouvé'], 401);
+            }
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json(['message' => 'Token expiré'], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json(['message' => 'Token invalide'], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['message' => 'Token manquant'], 401);
+        }
+        $disponibilite = Disponibilite::where('jour', $jour)->first();
+        if (!$disponibilite) {
+            return response()->json(['message' => 'Disponibilité introuvable'], 404);
+        }
+        return response()->json(['disponibilite' => $disponibilite]);
+    }
 
 
 
