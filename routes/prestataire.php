@@ -31,6 +31,8 @@ Route::middleware('auth:prestataire')->group(function () {
         Route::post('/rendezvous/{rendezVousId}/valider', [PrestataireController::class, 'validerRendezVous']);
         Route::post('/rendezvous/{rendezVousId}/annuler', [PrestataireController::class, 'annulerRendezVous']);
 
+        Route::get('rendezvous/{rendezVousId}', [PrestataireController::class, 'showRendezVous']);
+
 
     });
 });

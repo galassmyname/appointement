@@ -575,5 +575,44 @@ class PrestataireController extends Controller
         ]);
     }
 
+    // La méthode pour afficher les détails d'un rendez-vous par son ID
+    public function showRendezVous($id)
+    {
+        try {
+            // Authentifier le prestataire à partir du token JWT
+            $prestataire = JWTAuth::parseToken()->authenticate();
+
+            // Récupérer le rendez-vous avec les informations liées (type, client, disponibilité)
+            $rendezVous = RendezVous::where('rendez_vous.prestataire_id', $prestataire->id)  // Filtrer par l'ID du prestataire
+                ->with(['type_rendezvous', 'client', 'disponibilite'])  // Charger les relations
+                ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')  // Joindre la table 'disponibilites'
+                ->where('rendez_vous.id', $id)  // Filtrer par l'ID du rendez-vous
+                ->select('rendez_vous.*', 'disponibilites.*')  // Sélectionner les colonnes nécessaires
+                ->first();  // Récupérer le premier (et unique) résultat
+
+            // Vérifier si le rendez-vous existe
+            if (!$rendezVous) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Rendez-vous non trouvé'
+                ], 404);
+            }
+
+            // Retourner les détails du rendez-vous
+            return response()->json([
+                'status' => 'success',
+                'data' => $rendezVous
+            ], 200);
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourner une réponse avec le message d'erreur
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur inattendue s\'est produite.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 }
 
