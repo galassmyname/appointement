@@ -506,7 +506,9 @@ class UserController extends Controller
 
 
         $rendezVous = RendezVous::find($rendezVousId);
-
+//        return response()->json(
+//            ['rv'=> $rendezVous],200
+//        );
 
         if (!$rendezVous) {
             return response()->json(['message' => 'Rendez-vous non trouvé'], 404);
@@ -521,7 +523,7 @@ class UserController extends Controller
         $rendezVous->save();
 
 
-        $disponibilite = Disponibilite::where('date', $rendezVous->date)
+        $disponibilite = Disponibilite::where('id', $rendezVous->disponibilite_id)
             ->where('heureDebut', $rendezVous->heureDebut)
             ->first();
 
