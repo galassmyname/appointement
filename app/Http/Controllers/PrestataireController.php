@@ -170,7 +170,9 @@ class PrestataireController extends Controller
 
             return response()->json([
                 'message' => 'Token rafraîchi avec succès',
+                'token' => $newToken
             ])->cookie($cookie);
+            
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
@@ -483,7 +485,7 @@ class PrestataireController extends Controller
 
 
 
-    //Methode de validation de rendez-vous
+    //Methode de validation de rendez-vous(erreur)
     public function validerRendezVous(Request $request, $rendezVousId)
     {
 

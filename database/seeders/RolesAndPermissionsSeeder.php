@@ -23,7 +23,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-       
+
 
         // USER MODEL
         $userPermission1 = Permission::create(['name' => 'create: user']);
@@ -44,7 +44,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $permission4 = Permission::create(['name' => 'delete: permission']);
 
         // ADMINS
-        $adminPermission1 = Permission::create(['name' => 'read: admin']);
+        $adminPermission1 = Permission::create(['name' => 'create: admin']);
         $adminPermission2 = Permission::create(['name' => 'read: admin']);
         $adminPermission3 = Permission::create(['name' => 'update: admin']);
         $adminPermission4 = Permission::create(['name' => 'delete: admin']);
@@ -55,17 +55,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $disponibilityPermission2 = Permission::firstOrCreate(['name' => 'read: disponibility']);
         $disponibilityPermission3 = Permission::firstOrCreate(['name' => 'update: disponibility']);
         $disponibilityPermission4 = Permission::firstOrCreate(['name' => 'delete: disponibility']);
-        
-        //Rendez-vous 
+
+        //Rendez-vous
         $appointmentPermission1 = Permission::firstOrCreate(['name' => 'list: appointment']);
         $appointmentPermission2 = Permission::firstOrCreate(['name' => 'validate: appointment']);
         $appointmentPermission3 = Permission::firstOrCreate(['name' => 'cancel: appointment']);
         $appointmentPermission4 = Permission::firstOrCreate(['name' => 'delete: appointment']);
 
-
-      
-
-        
         $adminRole = Role::create(['name' => 'admin'])->syncPermissions([
             $userPermission1,
             $userPermission2,
@@ -87,12 +83,12 @@ class RolesAndPermissionsSeeder extends Seeder
             $appointmentPermission3,
             $appointmentPermission4,
         ]);
-        
+
         // Création du rôle prestataire avec ses permissions
         $prestataireRole = Role::create(['name' => 'prestataire'])->syncPermissions([
             $userPermission2,
             $userPermission2,
-            $permission2,  
+            $permission2,
             $adminPermission1,
             $disponibilityPermission1,
             $disponibilityPermission2,
@@ -103,7 +99,7 @@ class RolesAndPermissionsSeeder extends Seeder
             $appointmentPermission3,
             $appointmentPermission4,
         ]);
-        
+
         // Création du rôle utilisateur avec ses permissions
         $utilisateurRole = Role::create(['name' => 'utilisateur'])->syncPermissions([
             $userPermission2,
@@ -116,18 +112,18 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
 
-        
-        
+
+
         // Création d'un utilisateur  Admin
         User::create([
             'name' => 'admin',
             'is_admin' => 1,
-            'email' => 'admin@gmail.com',
+            'email' => 'admin1@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('passer123'),
             'remember_token' => Str::random(10),
             ])->assignRole($adminRole);
-            
+
             // Création d'un utilisateur prestataire
         User::create([
             'name' => 'prestataire',
@@ -137,7 +133,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'password' => Hash::make('passer123'),
             'remember_token' => Str::random(10),
             ])->assignRole($prestataireRole);
-            
+
         // Création d'un utilisateur utilisateur
         User::create([
             'name' => 'utilisateur',
@@ -148,8 +144,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'remember_token' => Str::random(10),
         ])->assignRole($utilisateurRole);
 
-        
-        
+
+
     }
 }
 
@@ -163,7 +159,7 @@ class RolesAndPermissionsSeeder extends Seeder
 //         'password' => Hash::make('passer123'),
 //         'remember_token' => Str::random(10),
 //     ])->assignRole($userRole);
-    
+
 // }
 
 
@@ -184,8 +180,8 @@ class RolesAndPermissionsSeeder extends Seeder
 //     $permission4,
 //     $adminPermission1,
 //     $adminPermission2,
-//     $adminPermission3, 
-//     $adminPermission4, 
+//     $adminPermission3,
+//     $adminPermission4,
 // ]);
 
 

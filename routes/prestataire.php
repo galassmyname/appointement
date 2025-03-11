@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('prestataire')->group(function () {
     Route::post('/register', [PrestataireController::class, 'prestataireRegister']);
     Route::post('/login', [PrestataireController::class, 'prestataireLogin']);
-    Route::post('/logout', [PrestataireController::class, 'logout'])->middleware('auth:api');
-    Route::post('/auth/refresh', [PrestataireController::class, 'refreshToken'])->middleware('auth:api');;
+    Route::post('/logout', [PrestataireController::class, 'logout']);
+    Route::post('/auth/refresh', [PrestataireController::class, 'refreshToken']);
 });
 
 
