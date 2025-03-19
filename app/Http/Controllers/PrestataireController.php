@@ -250,6 +250,11 @@ class PrestataireController extends Controller
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
 
+         // Vérification du rôle
+        if ($prestataire->role !== 'prestataire') {
+            return response()->json(['message' => 'Accès refusé : seuls les prestataires peuvent définir des disponibilités'], 403);
+        }
+
         // Créer ou mettre à jour la disponibilité pour un jour précis de la semaine
         try {
             $disponibilite = Disponibilite::updateOrCreate(

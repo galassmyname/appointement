@@ -102,9 +102,9 @@ class AuthController extends Controller
 
             // Authentifier l'utilisateur selon le modèle trouvé
             $guard = $user instanceof \App\Models\Prestataire ? 'prestataire' : 'api';
-//            return response()->json([
-//                'guard' => $guard,
-//            ]);
+            //            return response()->json([
+            //                'guard' => $guard,
+            //            ]);
 
 
             if (!$token = auth($guard)->attempt($request->only('email', 'password'))) {
