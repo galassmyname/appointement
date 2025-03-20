@@ -102,9 +102,9 @@ class AuthController extends Controller
 
             // Authentifier l'utilisateur selon le modèle trouvé
             $guard = $user instanceof \App\Models\Prestataire ? 'prestataire' : 'api';
-//            return response()->json([
-//                'guard' => $guard,
-//            ]);
+            //            return response()->json([
+            //                'guard' => $guard,
+            //            ]);
 
 
             if (!$token = auth($guard)->attempt($request->only('email', 'password'))) {
@@ -206,7 +206,7 @@ class AuthController extends Controller
 
 
 
-    // Déconnexion
+    // Déconnexion (on doit supprimer le token apres la deconnexion)
     public function logout()
     {
         try {
@@ -227,7 +227,7 @@ class AuthController extends Controller
     }
 
 
-    // Profil utilisateur
+    // Profil utilisateur(cette fonction devrait afficher le profil de l'utilisateur connecte ou dans le cas contraire c'est seulement l'admin qui peut voir tous)
     public function userProfile()
     {
 

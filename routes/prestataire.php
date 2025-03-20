@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
-Route::prefix('prestataire')->group(function () {
-    Route::post('/register', [PrestataireController::class, 'prestataireRegister']);
-    Route::post('/login', [PrestataireController::class, 'prestataireLogin']);
-    Route::post('/logout', [PrestataireController::class, 'logout'])->middleware('auth:api');
-    Route::post('/auth/refresh', [PrestataireController::class, 'refreshToken'])->middleware('auth:api');;
-});
+// Route::prefix('prestataire')->group(function () {
+//     Route::post('/register', [PrestataireController::class, 'prestataireRegister']);
+//     Route::post('/login', [PrestataireController::class, 'prestataireLogin']);
+//     Route::post('/logout', [PrestataireController::class, 'logout']);
+//     Route::post('/auth/refresh', [PrestataireController::class, 'refreshToken']);
+// });
 
 
 
-Route::middleware('auth:prestataire')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::prefix('prestataire')->group(function () {
         Route::post('/disponibilites', [PrestataireController::class, 'definirDisponibilites']);
         Route::get('/disponibilites/{jour}', [PrestataireController::class, 'getDisponibilite']);

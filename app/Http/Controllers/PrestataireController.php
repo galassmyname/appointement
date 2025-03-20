@@ -170,7 +170,9 @@ class PrestataireController extends Controller
 
             return response()->json([
                 'message' => 'Token rafraîchi avec succès',
+                'token' => $newToken
             ])->cookie($cookie);
+            
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
@@ -246,6 +248,11 @@ class PrestataireController extends Controller
 
         if (!$prestataire) {
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+        }
+
+         // Vérification du rôle
+        if ($prestataire->role !== 'prestataire') {
+            return response()->json(['message' => 'Accès refusé : seuls les prestataires peuvent définir des disponibilités'], 403);
         }
 
         // Créer ou mettre à jour la disponibilité pour un jour précis de la semaine
@@ -483,7 +490,7 @@ class PrestataireController extends Controller
 
 
 
-    //Methode de validation de rendez-vous
+    //Methode de validation de rendez-vous(erreur)
     public function validerRendezVous(Request $request, $rendezVousId)
     {
 
