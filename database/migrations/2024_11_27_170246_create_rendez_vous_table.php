@@ -29,7 +29,7 @@ class CreateRendezVousTable extends Migration
             // Définir les clés étrangères
             $table->foreign('type_rendezvous_id')->references('id')->on('type_rendez_vous')->onDelete('cascade');
             $table->foreign('client_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('prestataire_id')->references('id')->on('prestataires')->onDelete('cascade');
+            $table->foreign('prestataire_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('disponibilite_id')->references('id')->on('disponibilites')->onDelete('set null'); // Si la disponibilité est supprimée, on met à null
             
             $table->string('statut'); // Statut du rendez-vous (ex : 'pending', 'confirmed', 'canceled')

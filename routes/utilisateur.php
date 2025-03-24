@@ -17,7 +17,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/listerCreneauxDispo', [UserController::class, 'listerCreneauDispo']);
 
-    //Route::post('/demandeRendezVous/{disponibiliteId}', [UserController::class, 'demanderRendezVous']);
+    Route::post('/demandeRendezVous', [UserController::class, 'demanderRendezVous']);
     Route::get('/rendezvous', [UserController::class, 'listerRendezVous']);
     //les types de rendez vous
     Route::get('/listerTypeDeRV', [UserController::class, 'listerTypeDeRV']);
