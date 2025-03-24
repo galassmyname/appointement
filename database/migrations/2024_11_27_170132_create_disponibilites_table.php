@@ -20,7 +20,7 @@ class CreateDisponibilitesTable extends Migration
             $table->time('heureFin'); // Heure de fin
             // $table->foreignId('prestataire_id')->constrained()->onDelete('cascade'); // Clé étrangère vers la table prestataires
             //remplacer par users pour pointer vers la table users
-            $table->foreignId('prestataire_id')->constrained()->references('id')->on('users')->->onDelete('cascade');
+            $table->foreignId('prestataire_id')->constrained()->references('id')->on('users')->onDelete('cascade');
             $table->boolean('estDisponible')->default(true); // Indicateur de disponibilité
             $table->timestamps();
         });
