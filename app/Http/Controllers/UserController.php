@@ -326,6 +326,13 @@ class UserController extends Controller
     //         ], 500);
     //     }
     // }
+
+    private function getDayIndex($jour)
+{
+    $jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+    return array_search(strtolower($jour), $jours);
+}
+
     public function demanderRendezVous(Request $request)
     {
         // Validation des données d'entrée
@@ -416,7 +423,9 @@ class UserController extends Controller
                 'type_rendezvous_id' => $request->type_rendezvous_id,
                 'client_id' => $client->id,
                 'prestataire_id' => $disponibilite->prestataire_id,
-                'jour' => $disponibilite->jour,
+                // 'jour' => $disponibilite->jour,
+                'jour' => Carbon::now()->startOfWeek()->addDays($this->getDayIndex($disponibilite->jour))->toDateString(),
+
                 'heureDebut' => $request->heureDebut,
                 'heureFin' => date('H:i', $heureFinDemandee),
                 'statut' => 'en attente',
