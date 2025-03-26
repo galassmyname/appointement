@@ -124,4 +124,21 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'maintenance' => [
+        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
+        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Log Level
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the minimum "level" that will be logged by your
+    | application. The available levels are: emergency, alert, critical,
+    | error, warning, notice, info, and debug.
+    |
+    */
+    'log_level' => env('APP_LOG_LEVEL', 'debug'),
+
 ];

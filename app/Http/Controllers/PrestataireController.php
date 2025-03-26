@@ -24,69 +24,68 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class PrestataireController extends Controller
 {
 
-     // Inscription d'un prestataire (optionnel)
-     public function prestataireRegister(Request $request)
-     {
-         try {
-             // Valider les données d'entrée
-             $validator = Validator::make($request->all(), [
-                 'name' => 'required|string|max:255',
-                 'email' => 'required|email|unique:prestataires,email',
-                 'telephone' => 'required|string|max:20',
-                 'specialite' => 'required|string|max:255',
-                 'role_id' => 'required|exists:roles,id',
-                 'password' => 'required|string|confirmed|min:6',
-             ], [
-                 'name.required' => 'Le nom est obligatoire.',
-                 'email.required' => 'L\'email est obligatoire.',
-                 'email.unique' => 'Cet email est déjà utilisé.',
-                 'telephone.required' => 'Le téléphone est obligatoire.',
-                 'specialite.required' => 'La spécialité est obligatoire.',
-                 'role_id.required' => 'Le rôle est obligatoire.',
-                 'role_id.exists' => 'Le rôle sélectionné est invalide.',
-                 'password.required' => 'Le mot de passe est obligatoire.',
-                 'password.confirmed' => 'Les mots de passe ne correspondent pas.',
-             ]);
+    // Inscription d'un prestataire (optionnel)
+    public function prestataireRegister(Request $request)
+    {
+        try {
+            // Valider les données d'entrée
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:prestataires,email',
+                'telephone' => 'required|string|max:20',
+                'specialite' => 'required|string|max:255',
+                'role_id' => 'required|exists:roles,id',
+                'password' => 'required|string|confirmed|min:6',
+            ], [
+                'name.required' => 'Le nom est obligatoire.',
+                'email.required' => 'L\'email est obligatoire.',
+                'email.unique' => 'Cet email est déjà utilisé.',
+                'telephone.required' => 'Le téléphone est obligatoire.',
+                'specialite.required' => 'La spécialité est obligatoire.',
+                'role_id.required' => 'Le rôle est obligatoire.',
+                'role_id.exists' => 'Le rôle sélectionné est invalide.',
+                'password.required' => 'Le mot de passe est obligatoire.',
+                'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+            ]);
 
-             // Vérifier si la validation a échoué
-             if ($validator->fails()) {
-                 return response()->json([
-                     'status' => 'error',
-                     'message' => 'Validation des données échouée.',
-                     'errors' => $validator->errors()
-                 ], 400);
-             }
+            // Vérifier si la validation a échoué
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation des données échouée.',
+                    'errors' => $validator->errors()
+                ], 400);
+            }
 
-             // Créer le prestataire
-             $prestataire = Prestataire::create([
-                 'name' => $request->name,
-                 'email' => $request->email,
-                 'telephone' => $request->telephone,
-                 'specialite' => $request->specialite,
-                 'password' => Hash::make($request->password),
-                 'role_id' => $request->role_id,
-                 'is_admin' => false,
-             ]);
+            // Créer le prestataire
+            $prestataire = Prestataire::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'telephone' => $request->telephone,
+                'specialite' => $request->specialite,
+                'password' => Hash::make($request->password),
+                'role_id' => $request->role_id,
+                'is_admin' => false,
+            ]);
 
-             $token = Auth::guard('prestataire')->login($prestataire);
+            $token = Auth::guard('prestataire')->login($prestataire);
 
-             return response()->json([
-                 'status' => 'success',
-                 'message' => 'Inscription réussie.',
-                 'data' => [
-                     'prestataire' => $prestataire,
-                     'token' => $token
-                 ]
-             ], 201);
-
-         } catch (\Exception $e) {
-             return response()->json([
-                 'status' => 'error',
-                 'message' => 'Une erreur inattendue s\'est produite.',
-                 'error' => $e->getMessage()
-             ], 500);
-         }
-     }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Inscription réussie.',
+                'data' => [
+                    'prestataire' => $prestataire,
+                    'token' => $token
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur inattendue s\'est produite.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 
 
@@ -126,7 +125,6 @@ class PrestataireController extends Controller
                     'token' => $token,
                 ]
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => 'error',
@@ -172,7 +170,6 @@ class PrestataireController extends Controller
                 'message' => 'Token rafraîchi avec succès',
                 'token' => $newToken
             ])->cookie($cookie);
-            
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
@@ -224,7 +221,7 @@ class PrestataireController extends Controller
         return response()->json(['message' => 'Disponibilité créée avec succès', 'data' => $disponibilite], 201);
     }
 
-// Méthode pour permettre au prestataire de définir ses disponibilités
+    // Méthode pour permettre au prestataire de définir ses disponibilités
     public function definirDisponibilites(Request $request)
     {
         $request['jour'] = strtolower($request['jour']);
@@ -250,7 +247,7 @@ class PrestataireController extends Controller
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
 
-         // Vérification du rôle
+        // Vérification du rôle
         if ($prestataire->role !== 'prestataire') {
             return response()->json(['message' => 'Accès refusé : seuls les prestataires peuvent définir des disponibilités'], 403);
         }
@@ -445,49 +442,93 @@ class PrestataireController extends Controller
 
 
     //la methode pour lister les rende_vous des clients
-    public function listerRendezVousPrestataire(Request $request)
+    // public function listerRendezVous(Request $request)
+    // {
+    //     try {
+    //         $prestataire = JWTAuth::parseToken()->authenticate();
+
+    //         // if (!$prestataire || $prestataire->role !== 'prestataire') {
+    //         //     return response()->json([
+    //         //         'message' => 'Accès non autorisé.',
+    //         //     ], 403);
+    //         // }
+
+    //         $rendezVous = RendezVous::where('rendez_vous.prestataire_id', $prestataire->id)  // Précisez la table pour prestataire_id
+    //         ->with(['type_rendezvous', 'client', 'disponibilite'])
+    //         ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')
+    //         ->orderBy('disponibilites.jour', 'asc')  // Qualifiez aussi la colonne 'jour' de la table 'disponibilites'
+    //         ->orderBy('disponibilites.heureDebut', 'asc')  // Qualifiez 'heureDebut' de la table 'disponibilites'
+    //         ->select('rendez_vous.*')
+    //         ->get();
+
+
+    //         if ($rendezVous->isEmpty()) {
+    //             return response()->json([
+    //                 'debug' => 'Aucun rendez-vous trouvé.',
+    //                 'query_result' => $rendezVous,
+    //                 'prestataire_id' => $prestataire->id,
+    //             ], 404);
+    //         }
+
+    //         return response()->json([
+    //             'debug' => 'Rendez-vous récupérés avec succès.',
+    //             'rendezVous' => $rendezVous,
+    //         ], 200);
+
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Une erreur inattendue s\'est produite.',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    public function listerRendezVous(Request $request)
     {
         try {
-            $prestataire = JWTAuth::parseToken()->authenticate();
-
-            // if (!$prestataire || $prestataire->role !== 'prestataire') {
-            //     return response()->json([
-            //         'message' => 'Accès non autorisé.',
-            //     ], 403);
-            // }
-
-            $rendezVous = RendezVous::where('rendez_vous.prestataire_id', $prestataire->id)  // Précisez la table pour prestataire_id
-            ->with(['type_rendezvous', 'client', 'disponibilite'])
-            ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')
-            ->orderBy('disponibilites.jour', 'asc')  // Qualifiez aussi la colonne 'jour' de la table 'disponibilites'
-            ->orderBy('disponibilites.heureDebut', 'asc')  // Qualifiez 'heureDebut' de la table 'disponibilites'
-            ->select('rendez_vous.*')
-            ->get();
-
-
-            if ($rendezVous->isEmpty()) {
+            // Vérification d'authentification plus robuste
+            if (!$prestataire = JWTAuth::parseToken()->authenticate()) {
                 return response()->json([
-                    'debug' => 'Aucun rendez-vous trouvé.',
-                    'query_result' => $rendezVous,
-                    'prestataire_id' => $prestataire->id,
-                ], 404);
+                    'message' => 'Utilisateur non authentifié'
+                ], 401);
             }
 
+            // Chargement des relations et filtrage
+            $rendezVous = RendezVous::with([
+                'type_rendezvous',
+                'client',
+                'disponibilite'
+            ])
+            ->where('prestataire_id', $prestataire->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
             return response()->json([
-                'debug' => 'Rendez-vous récupérés avec succès.',
-                'rendezVous' => $rendezVous,
-            ], 200);
+                'message' => 'Rendez-vous récupérés avec succès',
+                'rendezVous' => $rendezVous
+            ]);
+
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json([
+                'message' => 'Token expiré'
+            ], 401);
+
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json([
+                'message' => 'Token invalide'
+            ], 401);
 
         } catch (\Exception $e) {
+            // Journalisation de l'erreur complète
+            Log::error('Erreur lors de la récupération des rendez-vous: ' . $e->getMessage());
+
             return response()->json([
-                'status' => 'error',
-                'message' => 'Une erreur inattendue s\'est produite.',
-                'error' => $e->getMessage()
+                'message' => 'Une erreur est survenue',
+                'error' => config('app.debug') ? $e->getMessage() : 'Erreur interne du serveur'
             ], 500);
         }
     }
-
-
 
 
     //Methode de validation de rendez-vous(erreur)
@@ -592,7 +633,7 @@ class PrestataireController extends Controller
             // Récupérer le rendez-vous avec les informations liées (type, client, disponibilité)
             $rendezVous = RendezVous::where('rendez_vous.prestataire_id', $prestataire->id)  // Filtrer par l'ID du prestataire
                 ->where('rendez_vous.id', $id)  // Filtrer par l'ID du rendez-vous
-                ->with(['type_rendezvous', 'client', 'disponibilite','prestataire'])  // Charger les relations
+                ->with(['type_rendezvous', 'client', 'disponibilite', 'prestataire'])  // Charger les relations
                 ->join('disponibilites', 'rendez_vous.disponibilite_id', '=', 'disponibilites.id')  // Joindre la table 'disponibilites'
                 ->select('rendez_vous.*')  // Sélectionner les colonnes nécessaires
                 ->first();  // Récupérer le premier (et unique) résultat
@@ -619,8 +660,4 @@ class PrestataireController extends Controller
             ], 500);
         }
     }
-
-
-
 }
-
