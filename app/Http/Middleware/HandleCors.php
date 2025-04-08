@@ -13,15 +13,19 @@ class HandleCors
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
-    {
-        $response = $next($request);
-        
-        $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:5173');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN');
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        
-        return $response;
-    }
+    // public function handle(Request $request, Closure $next): Response
+    // {
+        public function handle(Request $request, Closure $next)
+        {
+            $response = $next($request);
+
+            $response->header('Access-Control-Allow-Origin', 'http://localhost:5173');
+            $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            $response->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
+            $response->header('Access-Control-Allow-Credentials', 'true');
+
+            return $response;
+        }
+    //     return $next($request);
+    // }
 }
