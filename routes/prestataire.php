@@ -21,7 +21,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::prefix('prestataire')->group(function () {
         Route::post('/disponibilites', [PrestataireController::class, 'definirDisponibilites']);
-        Route::get('/disponibilites/{jour}', [PrestataireController::class, 'getDisponibilite']);
+        Route::get('/disponibilitesParJ/{jour}', [PrestataireController::class, 'getDisponibilite']);
+        Route::get('/disponibilites/{id}', [PrestataireController::class, 'getDisponibiliteById']);
         Route::get('/listedisponibilites', [PrestataireController::class, 'listerDisponibilites']);
         Route::put('/disponibilites/{id}', [PrestataireController::class, 'modifierDisponibilite']);
         Route::delete('/disponibilites/{id}', [PrestataireController::class, 'supprimerDisponibilite']);
@@ -32,8 +33,5 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/rendezvous/{rendezVousId}/annuler', [PrestataireController::class, 'annulerRendezVous']);
 
         Route::get('rendezvous/{rendezVousId}', [PrestataireController::class, 'showRendezVous']);
-
-
     });
 });
-

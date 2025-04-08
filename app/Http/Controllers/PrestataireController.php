@@ -294,9 +294,36 @@ class PrestataireController extends Controller
         if (!$disponibilite) {
             return response()->json(['message' => 'Disponibilité introuvable'], 404);
         }
-        return response()->json(['disponibilite' => $disponibilite]);
+        return response()->json(['disponibilite' => $disponibilite,]);
     }
 
+    // Méthode pour récupérer une disponibilité par son ID
+    public function getDisponibiliteById($id)
+    {
+        try {
+            // Authentification du prestataire
+            $prestataire = JWTAuth::parseToken()->authenticate();
+            if (!$prestataire) {
+                return response()->json(['error' => 'Token invalide ou utilisateur non trouvé'], 401);
+            }
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json(['message' => 'Token expiré'], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json(['message' => 'Token invalide'], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['message' => 'Token manquant'], 401);
+        }
+
+        // Récupération de la disponibilité par ID
+        $id = (int)$id;
+        $disponibilite = Disponibilite::where('id', $id)->first();
+        if (!$disponibilite) {
+            return response()->json(['message' => 'Disponibilité introuvable'], 404);
+        }
+
+        // Retour de la disponibilité
+        return response()->json(['disponibilite' => $disponibilite]);
+    }
 
 
     //Methode pour lister les creanaux horaires
@@ -500,25 +527,22 @@ class PrestataireController extends Controller
                 'client',
                 'disponibilite'
             ])
-            ->where('prestataire_id', $prestataire->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+                ->where('prestataire_id', $prestataire->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             return response()->json([
                 'message' => 'Rendez-vous récupérés avec succès',
                 'rendezVous' => $rendezVous
             ]);
-
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json([
                 'message' => 'Token expiré'
             ], 401);
-
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
             return response()->json([
                 'message' => 'Token invalide'
             ], 401);
-
         } catch (\Exception $e) {
             // Journalisation de l'erreur complète
             Log::error('Erreur lors de la récupération des rendez-vous: ' . $e->getMessage());
