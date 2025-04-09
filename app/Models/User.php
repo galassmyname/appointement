@@ -91,9 +91,22 @@ protected static function booted()
     //     return $this->belongsTo(Role::class, 'role', 'name');
     // }
 
+    public function disponibilites()
+    {
+        return $this->hasMany(Disponibilite::class, 'prestataire_id');
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'prestataire_id');
+    }
+    public function rendez_vous()
+    {
+        return $this->hasMany(RendezVous::class, 'prestataire_id');
     }
         // Méthodes requises par JWTSubject
     public function getJWTIdentifier()

@@ -24,7 +24,12 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/rendezvous/{rendezVousId}/annuler', [UserController::class, 'annulerRendezVous']);
 
 
-
+    Route::post('test-rendez-vous', function (Request $request) {
+        return response()->json([
+            'message' => 'Données reçues avec succès',
+            'data' => $request->all()
+        ]);
+    });
 
     // les routes pour le processus de demande de rendez-vous
     Route::get('disponibilitesChoisie/{id}', [UserController::class, 'DisponibilitesPrestataireChoisi']);// pour lister les disponibilites d'un prestataires

@@ -118,6 +118,8 @@ class RolesAndPermissionsSeeder extends Seeder
         User::create([
             'name' => 'admin',
             'is_admin' => 1,
+            'role' => 'admin',
+            // 'role_id' => 1,
             'email' => 'admin1@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('passer123'),
@@ -128,6 +130,8 @@ class RolesAndPermissionsSeeder extends Seeder
         User::create([
             'name' => 'prestataire',
             'is_admin' => 0,
+            'role' => 'prestataire',
+            // 'role_id' => 2,
             'email' => 'prestataire@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('passer123'),

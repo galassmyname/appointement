@@ -24,7 +24,7 @@ class Reservation extends Model
      */
     public function prestataire()
     {
-        return $this->belongsTo(Prestataire::class);
+        return $this->belongsTo(User::class, 'prestataire_id');
     }
 
     /**
