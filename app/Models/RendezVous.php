@@ -46,7 +46,7 @@ class RendezVous extends Model
 
     public function prestataire()
     {
-        return $this->belongsTo(Prestataire::class);
+        return $this->belongsTo(User::class, 'prestataire_id');
     }
 
     public function type_rendezvous()

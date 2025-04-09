@@ -24,7 +24,7 @@ class Disponibilite extends Model
     {
         // return $this->belongsTo(Prestataire::class);
         //remplacer par user pour pointer vers la table users
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'prestataire_id');
     }
 
     //La methode pour calculer les plage horaires possible
