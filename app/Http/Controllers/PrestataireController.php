@@ -511,7 +511,7 @@ class PrestataireController extends Controller
     //     }
     // }
 
-    public function listerRendezVous(Request $request)
+    public function listerRendezVousPrestataire(Request $request)
     {
         try {
             // Vérification d'authentification plus robuste
