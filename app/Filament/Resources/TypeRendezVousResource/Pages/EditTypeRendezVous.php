@@ -4,7 +4,8 @@ namespace App\Filament\Resources\TypeRendezVousResource\Pages;
 
 use App\Filament\Resources\TypeRendezVousResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Pages\EditRecord;
+// use Filament\Resources\Pages\EditRecord;
 
 class EditTypeRendezVous extends EditRecord
 {
