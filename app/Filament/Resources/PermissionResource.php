@@ -21,7 +21,7 @@ class PermissionResource extends Resource
     protected static ?string $model = Permission::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-key';
-    protected static ?string $navigationGroup = 'Admin management';
+    protected static ?string $navigationGroup = 'Gestion administrative';
 
     public static function form(Form $form): Form
     {
@@ -30,6 +30,7 @@ class PermissionResource extends Resource
                 Card::make()
                     ->schema([
                         TextInput::make('name')
+                            ->label('Nom')
                             ->unique()
                             ->required( )
                     ])

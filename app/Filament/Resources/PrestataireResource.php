@@ -23,7 +23,7 @@ class PrestataireResource extends Resource
     protected static ?string $model = Prestataire::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
-    protected static ?string $navigationGroup = 'Admin management';
+    protected static ?string $navigationGroup = 'Gestion administrative';
 
     public static function form(Form $form): Form
     {
@@ -81,7 +81,7 @@ class PrestataireResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('role.name') // Utilise la relation `role` pour accéder au champ `name`
-                    ->label('Role') // Intitulé de la colonne
+                    ->label('Rôle') // Intitulé de la colonne
                     ->sortable() // Permet le tri
                     ->searchable(), // Permet la recherche
                 Tables\Columns\TextColumn::make('email')
@@ -92,9 +92,9 @@ class PrestataireResource extends Resource
                     ->label('Téléphone')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('specialite')
-                    ->label('Specialite')
+                    ->label('Spécialité')
                     ->sortable(),
-                Tables\Columns\BooleanColumn::make('is_active')
+                Tables\Columns\TextColumn::make('is_active')
                     ->label('Actif'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')
