@@ -23,12 +23,33 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // return [
+        //     'name' => "admin",
+        //     'role' => 'admin',
+        //     'role_id' => 1,
+        //     'is_admin' => 1,
+        //     'email' => "admin@admin.com",
+        //     'email_verified_at' => now(),
+        //     'password' => Hash::make('passer123'),
+        //     'remember_token' => Str::random(10),
+        // ];
+
+        // return [
+        //     'name' => "marie",
+        //     'role' => 'prestataire',
+        //     'role_id' => 2,
+        //     'is_admin' => 0,
+        //     'email' => "marie@gmail.com",
+        //     'email_verified_at' => now(),
+        //     'password' => Hash::make('passer123'),
+        //     'remember_token' => Str::random(10),
+        // ];
         return [
-            'name' => "admin",
-            'role' => 'admin',
-            'role_id' => 1,
-            'is_admin' => 1,
-            'email' => "admin@admin.com",
+            'name' => "lucie",
+            'role' => 'utilisateur',
+            'role_id' => 3,
+            'is_admin' => 0,
+            'email' => "lucie@gmail.com",
             'email_verified_at' => now(),
             'password' => Hash::make('passer123'),
             'remember_token' => Str::random(10),

@@ -4,7 +4,8 @@ namespace App\Filament\Resources\TypeRendezVousResource\Pages;
 
 use App\Filament\Resources\TypeRendezVousResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Pages\CreateRecord;
+// use Filament\Resources\Pages\CreateRecord;
 
 class CreateTypeRendezVous extends CreateRecord
 {

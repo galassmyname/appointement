@@ -76,7 +76,7 @@ class AuthController extends Controller
 
 
 
-    // CMethode pour la connexion
+    // Methode pour la connexion
     public function login(Request $request)
     {
         try {
@@ -128,9 +128,6 @@ class AuthController extends Controller
         }
     }
 
-
-
-
     // La  methode pour le refresh token d'acces
     public function refreshToken()
     {
@@ -168,7 +165,32 @@ class AuthController extends Controller
         }
     }
 
+    // Déconnexion (on doit supprimer le token apres la deconnexion)
+    public function logout()
+    {
+        try {
+            $token = JWTAuth::getToken();
+            if (!$token) {
+                return response()->json(['message' => 'Aucun token trouvé'], 400);
+            }
+            JWTAuth::invalidate($token);
 
+            // Si vous utilisez également des sessions Laravel
+            // if (session()->has('user_id')) {
+            //     session()->forget('user_id');
+            // }
+
+            // // Forcer la destruction complète de la session
+            // session()->flush();
+
+            // Supprimer le cookie du refresh token
+            $cookie = cookie('refresh_token', '', -1);
+
+            return response()->json(['message' => 'Déconnexion réussie'])->cookie($cookie);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function me()
     {
@@ -199,30 +221,6 @@ class AuthController extends Controller
             return response()->json(['error' => 'Token invalide'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['error' => 'Token absent'], 401);
-        }
-    }
-
-
-
-
-
-    // Déconnexion (on doit supprimer le token apres la deconnexion)
-    public function logout()
-    {
-        try {
-            $token = JWTAuth::getToken();
-            if (!$token) {
-                return response()->json(['message' => 'Aucun token trouvé'], 400);
-            }
-            JWTAuth::invalidate($token);
-
-
-            // Supprimer le cookie du refresh token
-            $cookie = cookie('refresh_token', '', -1);
-
-            return response()->json(['message' => 'Déconnexion réussie'])->cookie($cookie);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
