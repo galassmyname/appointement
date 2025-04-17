@@ -99,9 +99,6 @@ class PrestataireResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_active')
                     ->label('Action')
-                    ->sortable()
-                    ->searchable(),
-
             ])
             ->filters([])
             ->actions([
