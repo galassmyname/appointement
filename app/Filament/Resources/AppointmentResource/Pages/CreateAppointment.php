@@ -10,10 +10,4 @@ use App\Filament\Pages\CreateRecord;
 class CreateAppointment extends CreateRecord
 {
     protected static string $resource = AppointmentResource::class;
-
-     // Ajouter cette méthode pour rediriger vers la liste
-    //  protected function getRedirectUrl(): string
-    //  {
-    //     return $this->getResource()::getUrl('index');
-    //  }
 }
