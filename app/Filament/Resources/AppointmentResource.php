@@ -30,9 +30,10 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = RendezVous::class;
 
-    protected static ?string $label = 'Appointments';
+    protected static ?string $pluralLabel = 'Rendez-vous';
+    protected static ?string $label = 'Rendez-vous';
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationGroup = 'Admin management';
+    protected static ?string $navigationGroup = 'Gestion administrative';
 
     // Formulaire de création/édition
     public static function form(Forms\Form $form): Forms\Form

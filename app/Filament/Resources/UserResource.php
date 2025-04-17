@@ -31,16 +31,19 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static ?string $label = 'Utilisateurs';
     //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'Admin management';
+    protected static ?string $navigationGroup = 'Gestion administrative';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+
                     ->label('Nom')
+
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
@@ -117,7 +120,10 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nom de l\'utilisateur')
+                    ->sortable()
+                    ->searchable(),
                 // Tables\Columns\BooleanColumn::make('is_admin')
                 //     ->boolean()
                 //     ->sortable()
@@ -137,10 +143,24 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label("registered on")
+                    ->label("enregistré le")
                     ->dateTime('d-M-Y')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\SelectColumn::make('status')
+                    ->label('Statut')
+                    ->options([
+                        'active' => 'Actif',
+                        'inactive' => 'Inactif',
+                ])
+                ->default('active') // Valeur par défaut
+                ->sortable()
+                ->searchable()
+                ->toggleable() // Permet de masquer/afficher la colonne
+                ->afterStateUpdated(function ($state, $record) {
+                    // Mettre à jour le statut dans la base de données
+                    $record->update(['status' => $state]);
+                }),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
