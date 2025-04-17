@@ -30,7 +30,8 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = RendezVous::class;
 
-    protected static ?string $label = 'Rendez-vou';
+    protected static ?string $pluralLabel = 'Rendez-vous';
+    protected static ?string $label = 'Rendez-vous';
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationGroup = 'Gestion administrative';
 

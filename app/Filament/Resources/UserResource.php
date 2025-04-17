@@ -72,7 +72,10 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nom de l\'utilisateur')
+                    ->sortable()
+                    ->searchable(),
                 // Tables\Columns\BooleanColumn::make('is_admin')
                 //     ->boolean()
                 //     ->sortable()
@@ -92,11 +95,11 @@ class UserResource extends Resource
                     ->dateTime('d-M-Y')
                     ->sortable()
                     ->searchable(),
-                    Tables\Columns\SelectColumn::make('status')
-                ->label('Statut')
-                ->options([
-                    'active' => 'Actif',
-                    'inactive' => 'Inactif',
+                Tables\Columns\SelectColumn::make('status')
+                    ->label('Statut')
+                    ->options([
+                        'active' => 'Actif',
+                        'inactive' => 'Inactif',
                 ])
                 ->default('active') // Valeur par défaut
                 ->sortable()

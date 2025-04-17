@@ -8,6 +8,8 @@ use App\Filament\Resources\RoleResource\RelationManagers\PermissionsRelationMana
 use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\MultiSelect;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -33,14 +35,16 @@ class RoleResource extends Resource
     {
         return $form
         ->schema([
-            Card::make()
+            Section::make()
                 ->schema([
                     TextInput::make('name')
                         ->label('Nom du rôle')
                         ->unique(ignoreRecord: true)
                         ->required(),
-                    MultiSelect::make('permissions')
+                    Select::make('permissions')
+                        ->label('Permissions')
                         ->relationship('permissions', 'name')
+                        ->multiple()
                         ->preload()
                         ->required()
                 ]),
@@ -53,8 +57,8 @@ class RoleResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->sortable(),
-                TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('created_at')
+                TextColumn::make('name') ->label('Nom du rôle')->sortable()->searchable(),
+                TextColumn::make('created_at') ->label('Créé le')
                     ->dateTime('d-M-Y')
                     ->sortable()
                     ->searchable(),
