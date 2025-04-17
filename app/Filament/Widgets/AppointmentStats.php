@@ -10,8 +10,8 @@ class AppointmentStats extends BaseWidget
 {
     protected static ?string $pollingInterval = '3s';
     protected static bool $isLazy = \false;
-    protected ?string $heading = 'Analytics';
-    protected ?string $description = 'An overview of some analytics.';
+    protected ?string $heading = 'Analyse';
+    protected ?string $description = 'Un aperçu de quelques analyses.';
  
     protected function getStats(): array
     {

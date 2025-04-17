@@ -18,9 +18,9 @@ class TypeRendezVousResource extends Resource
 {
     protected static ?string $model = TypeRendezVous::class;
 
-    protected static ?string $label = 'Appointments-type';
+    protected static ?string $label = 'Type de Rendez-vou';
     protected static ?string $navigationIcon = 'heroicon-s-tag';
-    protected static ?string $navigationGroup = 'Admin management';
+    protected static ?string $navigationGroup = 'Gestion administrative';
 
     public static function form(Form $form): Form
     {
@@ -86,7 +86,7 @@ class TypeRendezVousResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTypeRendezVouses::route('/'),
+            'index' => Pages\ListTypeRendezVous::route('/'),
             'create' => Pages\CreateTypeRendezVous::route('/create'),
             'edit' => Pages\EditTypeRendezVous::route('/{record}/edit'),
         ];
