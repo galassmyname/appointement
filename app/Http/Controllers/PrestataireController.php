@@ -222,6 +222,59 @@ class PrestataireController extends Controller
     }
 
     // Méthode pour permettre au prestataire de définir ses disponibilités
+    // public function definirDisponibilites(Request $request)
+    // {
+    //     $request['jour'] = strtolower($request['jour']);
+    //     $request->validate([
+    //         'jour' => 'required|in:lundi,mardi,mercredi,jeudi,vendredi',
+    //         'heureDebut' => 'required|date_format:H:i',
+    //         'heureFin' => 'required|date_format:H:i|after:heureDebut',
+    //         //'estDisponible' => 'required|boolean',
+    //     ]);
+
+    //     try {
+
+    //         $prestataire = JWTAuth::parseToken()->authenticate();
+    //     } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+    //         return response()->json(['message' => 'Token expiré'], 401);
+    //     } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+    //         return response()->json(['message' => 'Token invalide'], 401);
+    //     } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+    //         return response()->json(['message' => 'Token manquant'], 401);
+    //     }
+
+    //     if (!$prestataire) {
+    //         return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+    //     }
+
+    //     // Vérification du rôle
+    //     if ($prestataire->role !== 'prestataire') {
+    //         return response()->json(['message' => 'Accès refusé : seuls les prestataires peuvent définir des disponibilités'], 403);
+    //     }
+
+    //     // Créer ou mettre à jour la disponibilité pour un jour précis de la semaine
+    //     try {
+    //         $disponibilite = Disponibilite::updateOrCreate(
+    //             [
+    //                 'jour' => $request->jour,
+    //                 'prestataire_id' => $prestataire->id,
+    //             ],
+    //             [
+    //                 'heureDebut' => $request->heureDebut,
+    //                 'heureFin' => $request->heureFin,
+    //                 'estDisponible' => true,
+    //             ]
+    //         );
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Disponibilité pour le jour ' . $request->jour . ' définie avec succès',
+    //         'disponibilite' => $disponibilite
+    //     ]);
+    // }
+    // Méthode pour permettre au prestataire de définir ses disponibilités
     public function definirDisponibilites(Request $request)
     {
         $request['jour'] = strtolower($request['jour']);
@@ -229,11 +282,9 @@ class PrestataireController extends Controller
             'jour' => 'required|in:lundi,mardi,mercredi,jeudi,vendredi',
             'heureDebut' => 'required|date_format:H:i',
             'heureFin' => 'required|date_format:H:i|after:heureDebut',
-            //'estDisponible' => 'required|boolean',
         ]);
 
         try {
-
             $prestataire = JWTAuth::parseToken()->authenticate();
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['message' => 'Token expiré'], 401);
@@ -247,24 +298,34 @@ class PrestataireController extends Controller
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
 
-        // Vérification du rôle
-        if ($prestataire->role !== 'prestataire') {
-            return response()->json(['message' => 'Accès refusé : seuls les prestataires peuvent définir des disponibilités'], 403);
+        // Vérification des chevauchements
+        $existingDisponibilites = Disponibilite::where('prestataire_id', $prestataire->id)
+            ->where('jour', $request->jour)
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('heureDebut', [$request->heureDebut, $request->heureFin])
+                      ->orWhereBetween('heureFin', [$request->heureDebut, $request->heureFin])
+                      ->orWhere(function ($query) use ($request) {
+                          $query->where('heureDebut', '<=', $request->heureDebut)
+                                ->where('heureFin', '>=', $request->heureFin);
+                      });
+            })
+            ->exists();
+
+        if ($existingDisponibilites) {
+            return response()->json([
+                'message' => 'Les créneaux horaires se chevauchent avec une disponibilité existante.',
+            ], 422);
         }
 
-        // Créer ou mettre à jour la disponibilité pour un jour précis de la semaine
+        // Créer une nouvelle disponibilité
         try {
-            $disponibilite = Disponibilite::updateOrCreate(
-                [
-                    'jour' => $request->jour,
-                    'prestataire_id' => $prestataire->id,
-                ],
-                [
-                    'heureDebut' => $request->heureDebut,
-                    'heureFin' => $request->heureFin,
-                    'estDisponible' => true,
-                ]
-            );
+            $disponibilite = Disponibilite::create([
+                'jour' => $request->jour,
+                'prestataire_id' => $prestataire->id,
+                'heureDebut' => $request->heureDebut,
+                'heureFin' => $request->heureFin,
+                'estDisponible' => true,
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

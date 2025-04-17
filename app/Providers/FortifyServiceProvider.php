@@ -16,7 +16,7 @@ use Laravel\Fortify\Fortify;
 class FortifyServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Enregistrer tous les services de l'application.
      */
     public function register(): void
     {
@@ -24,7 +24,7 @@ class FortifyServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Démarrer tous les services de l'application.
      */
     public function boot(): void
     {
