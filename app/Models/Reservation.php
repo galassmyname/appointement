@@ -9,14 +9,12 @@ class Reservation extends Model
 {
     use HasFactory;
 
-    // Définir les champs que vous souhaitez mass-assignable
     protected $fillable = [
         'prestataire_id',
         'jour',
         'heureDebut',
         'heureFin',
-        'client_id', // Par exemple, si vous avez un client qui effectue la réservation
-        // Ajoutez d'autres champs ici selon vos besoins
+        'client_id',
     ];
 
     /**
@@ -32,6 +30,6 @@ class Reservation extends Model
      */
     public function client()
     {
-        return $this->belongsTo(User::class); // Si vous avez un modèle Client
+        return $this->belongsTo(User::class);
     }
 }

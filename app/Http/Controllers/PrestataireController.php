@@ -25,67 +25,67 @@ class PrestataireController extends Controller
 {
 
     // Inscription d'un prestataire (optionnel)
-    public function prestataireRegister(Request $request)
-    {
-        try {
-            // Valider les données d'entrée
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:prestataires,email',
-                'telephone' => 'required|string|max:20',
-                'specialite' => 'required|string|max:255',
-                'role_id' => 'required|exists:roles,id',
-                'password' => 'required|string|confirmed|min:6',
-            ], [
-                'name.required' => 'Le nom est obligatoire.',
-                'email.required' => 'L\'email est obligatoire.',
-                'email.unique' => 'Cet email est déjà utilisé.',
-                'telephone.required' => 'Le téléphone est obligatoire.',
-                'specialite.required' => 'La spécialité est obligatoire.',
-                'role_id.required' => 'Le rôle est obligatoire.',
-                'role_id.exists' => 'Le rôle sélectionné est invalide.',
-                'password.required' => 'Le mot de passe est obligatoire.',
-                'password.confirmed' => 'Les mots de passe ne correspondent pas.',
-            ]);
-
-            // Vérifier si la validation a échoué
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Validation des données échouée.',
-                    'errors' => $validator->errors()
-                ], 400);
-            }
-
-            // Créer le prestataire
-            $prestataire = Prestataire::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'telephone' => $request->telephone,
-                'specialite' => $request->specialite,
-                'password' => Hash::make($request->password),
-                'role_id' => $request->role_id,
-                'is_admin' => false,
-            ]);
-
-            $token = Auth::guard('prestataire')->login($prestataire);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Inscription réussie.',
-                'data' => [
-                    'prestataire' => $prestataire,
-                    'token' => $token
-                ]
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Une erreur inattendue s\'est produite.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+//    public function prestataireRegister(Request $request)
+//    {
+//        try {
+//            // Valider les données d'entrée
+//            $validator = Validator::make($request->all(), [
+//                'name' => 'required|string|max:255',
+//                'email' => 'required|email|unique:prestataires,email',
+//                'telephone' => 'required|string|max:20',
+//                'specialite' => 'required|string|max:255',
+//                'role_id' => 'required|exists:roles,id',
+//                'password' => 'required|string|confirmed|min:6',
+//            ], [
+//                'name.required' => 'Le nom est obligatoire.',
+//                'email.required' => 'L\'email est obligatoire.',
+//                'email.unique' => 'Cet email est déjà utilisé.',
+//                'telephone.required' => 'Le téléphone est obligatoire.',
+//                'specialite.required' => 'La spécialité est obligatoire.',
+//                'role_id.required' => 'Le rôle est obligatoire.',
+//                'role_id.exists' => 'Le rôle sélectionné est invalide.',
+//                'password.required' => 'Le mot de passe est obligatoire.',
+//                'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+//            ]);
+//
+//            // Vérifier si la validation a échoué
+//            if ($validator->fails()) {
+//                return response()->json([
+//                    'status' => 'error',
+//                    'message' => 'Validation des données échouée.',
+//                    'errors' => $validator->errors()
+//                ], 400);
+//            }
+//
+//            // Créer le prestataire
+//            $prestataire = Prestataire::create([
+//                'name' => $request->name,
+//                'email' => $request->email,
+//                'telephone' => $request->telephone,
+//                'specialite' => $request->specialite,
+//                'password' => Hash::make($request->password),
+//                'role_id' => $request->role_id,
+//                'is_admin' => false,
+//            ]);
+//
+//            $token = Auth::guard('prestataire')->login($prestataire);
+//
+//            return response()->json([
+//                'status' => 'success',
+//                'message' => 'Inscription réussie.',
+//                'data' => [
+//                    'prestataire' => $prestataire,
+//                    'token' => $token
+//                ]
+//            ], 201);
+//        } catch (\Exception $e) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Une erreur inattendue s\'est produite.',
+//                'error' => $e->getMessage()
+//            ], 500);
+//        }
+//    }
 
 
 
@@ -93,111 +93,111 @@ class PrestataireController extends Controller
 
 
     // Connexion d'un prestataire
-    public function prestataireLogin(Request $request)
-    {
-        try {
-            // Validation des données d'entrée
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required|min:6',
-            ], [
-                'email.required' => 'Le champ email est obligatoire.',
-                'email.email' => 'L\'adresse email fournie est invalide.',
-                'password.required' => 'Le champ mot de passe est obligatoire.',
-            ]);
-
-            // Tentative d'authentification avec le guard 'prestataire'
-            if (!$token = auth('prestataire')->attempt($request->only('email', 'password'))) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Email ou mot de passe incorrect.',
-                ], 401);
-            }
-
-            // Récupération du prestataire authentifié
-            $prestataire = auth('prestataire')->user();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Connexion réussie.',
-                'data' => [
-                    'prestataire' => $prestataire,
-                    'token' => $token,
-                ]
-            ], 200);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation des données échouée.',
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Une erreur inattendue s\'est produite.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-
+//    public function prestataireLogin(Request $request)
+//    {
+//        try {
+//            // Validation des données d'entrée
+//            $request->validate([
+//                'email' => 'required|email',
+//                'password' => 'required|min:6',
+//            ], [
+//                'email.required' => 'Le champ email est obligatoire.',
+//                'email.email' => 'L\'adresse email fournie est invalide.',
+//                'password.required' => 'Le champ mot de passe est obligatoire.',
+//            ]);
+//
+//            // Tentative d'authentification avec le guard 'prestataire'
+//            if (!$token = auth('prestataire')->attempt($request->only('email', 'password'))) {
+//                return response()->json([
+//                    'status' => 'error',
+//                    'message' => 'Email ou mot de passe incorrect.',
+//                ], 401);
+//            }
+//
+//            // Récupération du prestataire authentifié
+//            $prestataire = auth('prestataire')->user();
+//
+//            return response()->json([
+//                'status' => 'success',
+//                'message' => 'Connexion réussie.',
+//                'data' => [
+//                    'prestataire' => $prestataire,
+//                    'token' => $token,
+//                ]
+//            ], 200);
+//        } catch (\Illuminate\Validation\ValidationException $e) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Validation des données échouée.',
+//                'errors' => $e->errors(),
+//            ], 422);
+//        } catch (\Exception $e) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Une erreur inattendue s\'est produite.',
+//                'error' => $e->getMessage(),
+//            ], 500);
+//        }
+//    }
 
 
 
-    public function refreshToken()
-    {
-        try {
-            $token = JWTAuth::getToken();
-
-            if (!$token) {
-                return response()->json(['error' => 'Token non fourni'], 401);
-            }
 
 
-            $newToken = JWTAuth::refresh($token);
-
-            $cookie = cookie(
-                'refresh_token',
-                $newToken, // Valeur du refresh token
-                1440, // Expiration en minutes (14 jours)
-                '/', // Chemin
-                null, // Domaine
-                true, // HTTPS uniquement
-                true // HTTP-only
-            );
-
-            return response()->json([
-                'message' => 'Token rafraîchi avec succès',
-                'token' => $newToken
-            ])->cookie($cookie);
-        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
-        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-            return response()->json(['error' => 'Token invalide'], 401);
-        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return response()->json(['error' => 'Erreur lors du rafraîchissement du token'], 500);
-        }
-    }
+//    public function refreshToken()
+//    {
+//        try {
+//            $token = JWTAuth::getToken();
+//
+//            if (!$token) {
+//                return response()->json(['error' => 'Token non fourni'], 401);
+//            }
+//
+//
+//            $newToken = JWTAuth::refresh($token);
+//
+//            $cookie = cookie(
+//                'refresh_token',
+//                $newToken, // Valeur du refresh token
+//                1440, // Expiration en minutes (14 jours)
+//                '/', // Chemin
+//                null, // Domaine
+//                true, // HTTPS uniquement
+//                true // HTTP-only
+//            );
+//
+//            return response()->json([
+//                'message' => 'Token rafraîchi avec succès',
+//                'token' => $newToken
+//            ])->cookie($cookie);
+//        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+//            return response()->json(['error' => 'Le token a expiré et ne peut pas être rafraîchi'], 401);
+//        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+//            return response()->json(['error' => 'Token invalide'], 401);
+//        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+//            return response()->json(['error' => 'Erreur lors du rafraîchissement du token'], 500);
+//        }
+//    }
 
 
 
     // Déconnexion d'un prestataire
-    public function logout()
-    {
-        try {
-            $token = JWTAuth::getToken();
-
-            if ($token) {
-                JWTAuth::invalidate($token);
-            }
-
-            $cookie = cookie('refresh_token', '', -1);
-
-            return response()->json(['message' => 'Déconnexion réussie'])->cookie($cookie);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+//    public function logout()
+//    {
+//        try {
+//            $token = JWTAuth::getToken();
+//
+//            if ($token) {
+//                JWTAuth::invalidate($token);
+//            }
+//
+//            $cookie = cookie('refresh_token', '', -1);
+//
+//            return response()->json(['message' => 'Déconnexion réussie'])->cookie($cookie);
+//        } catch (\Exception $e) {
+//            return response()->json(['error' => $e->getMessage()], 500);
+//        }
+//    }
 
 
 
