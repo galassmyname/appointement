@@ -17,12 +17,12 @@ use Illuminate\Support\Facades\Mail;
 class RendezVous extends Model
 {
     use HasFactory;
-    use  SoftDeletes; 
+    use  SoftDeletes;
 
     protected $table = 'rendez_vous';
-    
+
     protected $fillable = [
-        'duree', 
+        'duree',
         'delaiPreReservation',
         'intervalPlanification',
         'nombre_jours',
@@ -34,10 +34,10 @@ class RendezVous extends Model
         'client_id',
         'prestataire_id',
         'statut' => 'en attente',
-        'heureDebut', // Ajouté
-        'heureFin',   // Ajouté
+        'heureDebut',
+        'heureFin',
     ];
-    
+
 
     public function client()
     {
@@ -77,28 +77,28 @@ class RendezVous extends Model
     // protected static function booted()
     // {
     //     parent::booted();
-    
+
     //     static::deleting(function ($rendezVous) {
     //         // Charger le prestataire lié au rendez-vous
     //         $prestataire = $rendezVous->prestataire;
-    
+
     //         if ($prestataire) {
     //             // Supprimer toutes les réservations liées au prestataire
     //             $prestataire->reservations()->delete();
     //         }
     //     });
     // }
-    
+
 
 
     protected static function booted()
     {
         parent::booted();
-    
+
         static::deleting(function ($rendezVous) {
             // Charger le prestataire lié au rendez-vous
             $prestataire = $rendezVous->prestataire;
-    
+
             if ($prestataire) {
                 // Supprimer toutes les réservations liées au prestataire
                 $prestataire->reservations()->delete();
@@ -108,11 +108,11 @@ class RendezVous extends Model
         static::created(function ($rendezVous) {
             // Charger les relations nécessaires
             $rendezVous->load(['client', 'prestataire', 'disponibilite', 'type_rendezvous']);
-            
+
             $client = User::find($rendezVous->client_id);
             $prestataire = User::find($rendezVous->prestataire_id);
             //$disponibilite = User::find($rendezVous->disponibilite_id);
-    
+
             if ($client) {
                 $client->notify(new RendezVousClientNotificationByAdmin($rendezVous));
             }
@@ -136,7 +136,7 @@ class RendezVous extends Model
            // Récupérer le client et le prestataire associés au rendez-vous
            $client = User::find($this->client_id);
            $prestataire = User::find($this->prestataire_id);
-       
+
            // Vérifier si le client et le prestataire existent
            if ($client && $prestataire) {
                // Déterminer le message en fonction du statut
@@ -145,14 +145,14 @@ class RendezVous extends Model
                } elseif ($this->statut === 'annulé') {
                    $message = "Votre rendez-vous vient d'être annulé par l'administrateur.";
                }
-       
+
                // Envoyer un email au client
                try {
                    Mail::to($client->email)->send(new StatutRendezVousChange($this, $client, $message));
                } catch (\Exception $e) {
                    Log::error('Erreur lors de l\'envoi de l\'email au client', ['message' => $e->getMessage()]);
                }
-       
+
                // Envoyer un email au prestataire
                try {
                    Mail::to($prestataire->email)->send(new StatutRendezVousChange($this, $prestataire, $message));
@@ -161,9 +161,9 @@ class RendezVous extends Model
                }
            }
        }
-       
-   
-    
+
+
+
 
 
     public static function hasConflict($prestataireId, $heureDebut, $heureFin)
