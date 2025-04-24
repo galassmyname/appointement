@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 
 
 use App\Jobs\NotifyClientAboutRendezVous;
@@ -15,7 +16,6 @@ use App\Notifications\DemandeRendezVousNotification; // Import de la notificatio
 use App\Notifications\RendezVousAnnuleNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Tymon\JWTAuth\Facades\JWTAuth;
 //use prestataire;
@@ -28,10 +28,10 @@ class UserController extends Controller
     {
         try {
             return response()->json(["typeRendezVous" => TypeRendezVous::all()]);
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             return response()->json([
                 $exception->getMessage()
-            ],422);
+            ], 422);
         }
     }
     // La methode pour lister les disponibilite d'un prestataire
@@ -64,7 +64,6 @@ class UserController extends Controller
                 ],
                 'disponibilites' => $disponibilites
             ], 200);
-
         } catch (\Exception $e) {
             // Gestion des erreurs inattendues
             return response()->json([
@@ -112,7 +111,6 @@ class UserController extends Controller
                 'message' => 'Disponibilités des prestataires récupérées avec succès',
                 'data' => $resultats
             ], 200);
-
         } catch (\Exception $e) {
             // Gestion des erreurs inattendues
             return response()->json([
@@ -213,8 +211,10 @@ class UserController extends Controller
         }
 
         // Retourner les plages horaires calculées
-        return response()->json([ 'disponibilite_id' => $disponibilite->id,
-            'data' => $plagesHoraires], 200);
+        return response()->json([
+            'disponibilite_id' => $disponibilite->id,
+            'data' => $plagesHoraires
+        ], 200);
     }
 
 
@@ -346,28 +346,28 @@ public function demanderRendezVous(Request $request)
 
     DB::beginTransaction(); // Démarrer une transaction
 
-    try {
-        $client = JWTAuth::parseToken()->authenticate();
+        try {
+            $client = JWTAuth::parseToken()->authenticate();
 
-        // Récupérer la disponibilité
-        $disponibilite = Disponibilite::with('prestataire')->find($request->disponibilite_id);
-        if (!$disponibilite || !$disponibilite->estDisponible) {
-            return response()->json(['message' => 'La disponibilité sélectionnée est indisponible.'], 404);
-        }
+            // Récupérer la disponibilité
+            $disponibilite = Disponibilite::with('prestataire')->find($request->disponibilite_id);
+            if (!$disponibilite || !$disponibilite->estDisponible) {
+                return response()->json(['message' => 'La disponibilité sélectionnée est indisponible.'], 404);
+            }
 
-        // Gestion de l'intervalPlanification
-        if ($request->intervalPlanification === 'disponible_maintenant') {
-            $dateDebut = now();
-            $dateFin = now()->addDays($request->nombre_jours);
-        } else { // dans_une_fourchette
-            $dateDebut = Carbon::parse($request->date_debut);
-            $dateFin = Carbon::parse($request->date_fin);
-        }
+            // Gestion de l'intervalPlanification
+            if ($request->intervalPlanification === 'disponible_maintenant') {
+                $dateDebut = now();
+                $dateFin = now()->addDays($request->nombre_jours);
+            } else { // dans_une_fourchette
+                $dateDebut = Carbon::parse($request->date_debut);
+                $dateFin = Carbon::parse($request->date_fin);
+            }
 
-        // Vérification de la durée demandée
-        $heureDebut = strtotime($disponibilite->heureDebut);
-        $heureFin = strtotime($disponibilite->heureFin);
-        $dureeDisponibilite = ($heureFin - $heureDebut) / 60;
+            // Vérification de la durée demandée
+            $heureDebut = strtotime($disponibilite->heureDebut);
+            $heureFin = strtotime($disponibilite->heureFin);
+            $dureeDisponibilite = ($heureFin - $heureDebut) / 60;
 
         if ($request->duree > $dureeDisponibilite) {
             return response()->json([
@@ -396,9 +396,9 @@ public function demanderRendezVous(Request $request)
             $dateReelle = date('Y-m-d');
         }
 
-        // Calcul de l'heure de fin à partir de l'heure de début et de la durée
-        $heureDebutDemandee = strtotime($request->heureDebut);
-        $heureFinDemandee = $heureDebutDemandee + ($request->duree * 60);
+            // Calcul de l'heure de fin à partir de l'heure de début et de la durée
+            $heureDebutDemandee = strtotime($request->heureDebut);
+            $heureFinDemandee = $heureDebutDemandee + ($request->duree * 60);
 
         // MODIFICATION ICI : Vérifier les conflits avec les dates réelles
         $conflit = Reservation::where('prestataire_id', $disponibilite->prestataire_id)
@@ -456,7 +456,7 @@ public function demanderRendezVous(Request $request)
             'dans_une_fourchette' => 2
         ];
 
-        $intervalPlanificationValue = $intervalPlanificationMap[$request->intervalPlanification] ?? null;
+            $intervalPlanificationValue = $intervalPlanificationMap[$request->intervalPlanification] ?? null;
 
         if ($intervalPlanificationValue === null) {
             return response()->json([
@@ -465,32 +465,32 @@ public function demanderRendezVous(Request $request)
             ], 400);
         }
 
-        // Création du rendez-vous avec la valeur numérique
-        // Création du rendez-vous
-        $rendezVous = RendezVous::create([
-            'duree' => $request->duree,
-            'delaiPreReservation' => $request->delaiPreReservation,
-            // 'intervalPlanification' => $request->intervalPlanification,
-            'intervalPlanification' => $intervalPlanificationValue,
-            'dureeAvantAnnulation' => $request->dureeAvantAnnulation,
-            'disponibilite_id' => $disponibilite->id,
-            'type_rendezvous_id' => $request->type_rendezvous_id,
-            'client_id' => $client->id,
-            'prestataire_id' => $disponibilite->prestataire_id,
-            'jour' => $disponibilite->jour,
-            'heureDebut' => $request->heureDebut,
-            'heureFin' => date('H:i', $heureFinDemandee),
-            'statut' => 'en attente',
-            'dateDebut' => $dateDebut,
-            'dateFin' => $dateFin,
-        ]);
+            // Création du rendez-vous avec la valeur numérique
+            // Création du rendez-vous
+            $rendezVous = RendezVous::create([
+                'duree' => $request->duree,
+                'delaiPreReservation' => $request->delaiPreReservation,
+                // 'intervalPlanification' => $request->intervalPlanification,
+                'intervalPlanification' => $intervalPlanificationValue,
+                'dureeAvantAnnulation' => $request->dureeAvantAnnulation,
+                'disponibilite_id' => $disponibilite->id,
+                'type_rendezvous_id' => $request->type_rendezvous_id,
+                'client_id' => $client->id,
+                'prestataire_id' => $disponibilite->prestataire_id,
+                'jour' => $disponibilite->jour,
+                'heureDebut' => $request->heureDebut,
+                'heureFin' => date('H:i', $heureFinDemandee),
+                'statut' => 'en attente',
+                'dateDebut' => $dateDebut,
+                'dateFin' => $dateFin,
+            ]);
 
-        // Notification au prestataire
-        $disponibilite->prestataire->notify(new DemandeRendezVousNotification($rendezVous));
+            // Notification au prestataire
+            $disponibilite->prestataire->notify(new DemandeRendezVousNotification($rendezVous));
 
-        if ($rendezVous->statut === 'valide') {
-            $heureDebut = Carbon::parse($rendezVous->heureDebut, $rendezVous->jour);
-            $delaiAvantNotification = $heureDebut->subMinutes(60);
+            if ($rendezVous->statut === 'valide') {
+                $heureDebut = Carbon::parse($rendezVous->heureDebut, $rendezVous->jour);
+                $delaiAvantNotification = $heureDebut->subMinutes(60);
 
             // Planifier l'envoi de l'email
             NotifyClientAboutRendezVous::dispatch($rendezVous)->delay($delaiAvantNotification);
@@ -498,11 +498,11 @@ public function demanderRendezVous(Request $request)
 
         DB::commit(); // Confirmer la transaction
 
-        return response()->json([
-            'message' => 'Votre demande de rendez-vous a été enregistrée avec succès.',
-            'reservation' => $reservation,
-            'rendezVous' => $rendezVous
-        ], 201);
+            return response()->json([
+                'message' => 'Votre demande de rendez-vous a été enregistrée avec succès.',
+                'reservation' => $reservation,
+                'rendezVous' => $rendezVous
+            ], 201);
 
     } catch (\Exception $e) {
         DB::rollBack(); // Annuler la transaction en cas d'erreur
@@ -542,7 +542,6 @@ public function demanderRendezVous(Request $request)
                 'message' => 'Liste des rendez-vous récupérée avec succès.',
                 'rendezVous' => $rendezVous,
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -570,9 +569,9 @@ public function demanderRendezVous(Request $request)
 
 
         $rendezVous = RendezVous::find($rendezVousId);
-//        return response()->json(
-//            ['rv'=> $rendezVous],200
-//        );
+        //        return response()->json(
+        //            ['rv'=> $rendezVous],200
+        //        );
 
         if (!$rendezVous) {
             return response()->json(['message' => 'Rendez-vous non trouvé'], 404);
@@ -612,7 +611,4 @@ public function demanderRendezVous(Request $request)
             'rendezVous' => $rendezVous
         ]);
     }
-
-
-
 }
