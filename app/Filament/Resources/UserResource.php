@@ -147,7 +147,20 @@ class UserResource extends Resource
                     ->dateTime('d-M-Y')
                     ->sortable()
                     ->searchable(),
-             
+                Tables\Columns\SelectColumn::make('status')
+                    ->label('Statut')
+                    ->options([
+                        'active' => 'Actif',
+                        'inactive' => 'Inactif',
+                ])
+                ->default('active') // Valeur par défaut
+                ->sortable()
+                ->searchable()
+                ->toggleable() // Permet de masquer/afficher la colonne
+                ->afterStateUpdated(function ($state, $record) {
+                    // Mettre à jour le statut dans la base de données
+                    $record->update(['status' => $state]);
+                }),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
