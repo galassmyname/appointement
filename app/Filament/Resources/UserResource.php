@@ -18,6 +18,8 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Filament\Tables\columns\TextColumn;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
@@ -66,13 +68,7 @@ class UserResource extends Resource
                     ->searchable(),
                 Forms\Components\Toggle::make('is_active')
                     ->label('Actif')
-                    ->default(true)
-                    ->afterStateUpdated(function ($state, $record) {
-                        // S'assurer que le record existe déjà (lors de la modification et non de la création)
-                        if ($record->exists) {
-                            $record->update(['is_active' => $state]);
-                        }
-                    })
+                    ->default(true),
                 // On retire le champ role_id du formulaire
                 // La logique du rôle par défaut sera gérée automatiquement dans le modèle
             ]);
@@ -153,27 +149,95 @@ class UserResource extends Resource
                     ->dateTime('d-M-Y')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\SelectColumn::make('status')
+                Tables\Columns\TextColumn::make('is_active')
                     ->label('Statut')
-                    ->options([
-                        'active' => 'Actif',
-                        'inactive' => 'Inactif',
-                    ])
-                    ->default('active') // Valeur par défaut
+                    ->formatStateUsing(fn($state) => $state ? 'Actif' : 'Inactif')
+                    ->color(fn($state) => $state ? 'success' : 'danger')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable() // Permet de masquer/afficher la colonne
-                    ->afterStateUpdated(function ($state, $record) {
-                        // Mettre à jour le statut dans la base de données
-                        $record->update(['status' => $state]);
-                    }),
+                    ->searchable(),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\Filter::make('Non-Admins')
                     ->query(fn(Builder $query) => $query->where('is_admin', '!=', 1))
                     ->default(), // Ce filtre est appliqué par défaut
+            ])
+
+            ->actions([
+                Tables\Actions\ActionGroup::make([
+                    // Action pour activer un utilisateur inactif
+                    Tables\Actions\Action::make('activer')
+                        ->label('Activer')
+                        ->color('success')
+                        ->icon('heroicon-o-check-circle')
+                        ->visible(fn ($record) => !$record->is_active)
+                        ->action(function ($record) {
+                            $record->is_active = true;
+                            $record->save();
+                            
+                            Notification::make()
+                                ->success()
+                                ->title('Utilisateur activé')
+                                ->body('Utilisateur activé avec succès.')
+                                ->send();
+                            
+                            Log::info('Utilisateur activé : ' . $record->id);
+                        })
+                        ->requiresConfirmation(),
+                    
+                    // Action pour désactiver un utilisateur actif
+                    Tables\Actions\Action::make('desactiver')
+                        ->label('Désactiver')
+                        ->color('danger')
+                        ->icon('heroicon-o-x-circle')
+                        ->visible(fn ($record) => $record->is_active)
+                        ->action(function ($record) {
+                            $record->is_active = false;
+                            $record->save();
+                            
+                            Notification::make()
+                                ->warning()
+                                ->title('Utilisateur désactivé')
+                                ->body('Utilisateur désactivé avec succès.')
+                                ->send();
+                            
+                            Log::info('Utilisateur désactivé : ' . $record->id);
+                        })
+                        ->requiresConfirmation(),
+                ])
+                ->tooltip('Actions') // Info-bulle pour le menu
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
+
+            // ->actions([
+            //     Tables\Actions\Action::make('toggle_status')
+            //         ->label(fn ($record) => $record->is_active ? 'Inactif' : 'Actif')
+            //         // ->icon(fn ($record) => $record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+            //         ->color(fn ($record) => $record->is_active ? 'danger' : 'success')
+            //         ->action(function ($record) {
+            //             $record->is_active = !$record->is_active;
+            //             $record->save();
+                        
+            //             $message = $record->is_active ? 'Utilisateur activé' : 'Utilisateur désactivé';
+            //             $type = $record->is_active ? 'success' : 'warning';
+                        
+            //             Notification::make()
+            //                 ->$type()
+            //                 ->title($message)
+            //                 ->body($message . ' avec succès.')
+            //                 ->send();
+            //         }),
+               
+            // ])
+            // ->bulkActions([
+            //     Tables\Actions\BulkActionGroup::make([
+            //         Tables\Actions\DeleteBulkAction::make(),
+            //     ]),
+            // ]);
         // ->actions([
         //     Tables\Actions\EditAction::make(),
         //     Tables\Actions\DeleteAction::make(),
