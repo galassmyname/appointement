@@ -42,6 +42,8 @@ class User extends Authenticatable implements JWTSubject
         'role_id', // Ajoutez la colonne role ici
         'is_admin',
         'password',
+        'is_active',
+        'specialite'
     ];
 
     // App\Models\User.php

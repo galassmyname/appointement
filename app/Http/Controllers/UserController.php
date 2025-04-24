@@ -16,7 +16,6 @@ use App\Notifications\DemandeRendezVousNotification; // Import de la notificatio
 use App\Notifications\RendezVousAnnuleNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Tymon\JWTAuth\Facades\JWTAuth;
 //use prestataire;
