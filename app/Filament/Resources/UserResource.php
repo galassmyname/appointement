@@ -66,7 +66,13 @@ class UserResource extends Resource
                     ->searchable(),
                 Forms\Components\Toggle::make('is_active')
                     ->label('Actif')
-                    ->default(true),
+                    ->default(true)
+                    ->afterStateUpdated(function ($state, $record) {
+                        // S'assurer que le record existe déjà (lors de la modification et non de la création)
+                        if ($record->exists) {
+                            $record->update(['is_active' => $state]);
+                        }
+                    })
                 // On retire le champ role_id du formulaire
                 // La logique du rôle par défaut sera gérée automatiquement dans le modèle
             ]);
@@ -152,15 +158,15 @@ class UserResource extends Resource
                     ->options([
                         'active' => 'Actif',
                         'inactive' => 'Inactif',
-                ])
-                ->default('active') // Valeur par défaut
-                ->sortable()
-                ->searchable()
-                ->toggleable() // Permet de masquer/afficher la colonne
-                ->afterStateUpdated(function ($state, $record) {
-                    // Mettre à jour le statut dans la base de données
-                    $record->update(['status' => $state]);
-                }),
+                    ])
+                    ->default('active') // Valeur par défaut
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable() // Permet de masquer/afficher la colonne
+                    ->afterStateUpdated(function ($state, $record) {
+                        // Mettre à jour le statut dans la base de données
+                        $record->update(['status' => $state]);
+                    }),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

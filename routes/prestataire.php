@@ -9,15 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
-// Route::prefix('prestataire')->group(function () {
-//     Route::post('/register', [PrestataireController::class, 'prestataireRegister']);
-//     Route::post('/login', [PrestataireController::class, 'prestataireLogin']);
-//     Route::post('/logout', [PrestataireController::class, 'logout']);
-//     Route::post('/auth/refresh', [PrestataireController::class, 'refreshToken']);
-// });
-
-
-
 Route::middleware('auth:api')->group(function () {
     Route::prefix('prestataire')->group(function () {
         Route::post('/disponibilites', [PrestataireController::class, 'definirDisponibilites']);
