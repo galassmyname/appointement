@@ -112,16 +112,19 @@ class AppointmentResource extends Resource
                 TextInput::make('delaiPreReservation')
                     ->label('Délai pres-réservation (en minutes)')
                     ->required()
+                    ->minValue(0)
                     ->numeric(),
         
                 TextInput::make('intervalPlanification')
                     ->label('Intervalle de planification (en jours)')
                     ->required()
+                    ->minValue(0)
                     ->numeric(),
         
                 TextInput::make('dureeAvantAnnulation')
                     ->label('Durée avant annulation (en minutes)')
                     ->required()
+                    ->minValue(0)
                     ->numeric(),
         
                     Select::make('heureDebut')
