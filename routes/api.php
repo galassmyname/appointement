@@ -28,6 +28,3 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 require_once __DIR__.'/prestataire.php';
 require_once __DIR__.'/utilisateur.php';
-
-
-

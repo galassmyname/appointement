@@ -13,10 +13,10 @@ class Disponibilite extends Model
     use HasFactory;
 
     protected $fillable = [
-        'jour',
-        'heureDebut', 
-        'heureFin', 
-        'prestataire_id', 
+        'date',
+        'heureDebut',
+        'heureFin',
+        'prestataire_id',
         'estDisponible'
     ];
 
@@ -32,30 +32,30 @@ class Disponibilite extends Model
     public function calculerPlagesHoraires($duree)
     {
         $options = collect();
-        $heureDebut = Carbon::parse($this->heureDebut); 
-        $heureFin = Carbon::parse($this->heureFin);     
-    
+        $heureDebut = Carbon::parse($this->heureDebut);
+        $heureFin = Carbon::parse($this->heureFin);
+
         $duree = (int) $duree; // Assurez-vous que la durée est un entier
-    
+
         Log::info('Calcul des plages horaires', [
             'heureDebut' => $heureDebut,
             'heureFin' => $heureFin,
             'duree' => $duree,
         ]);
-    
+
         $current = $heureDebut->copy(); // Clone l'heure de début pour éviter les modifications directes
-    
+
         while ($current->lte($heureFin)) {
             $options[$current->format('H:i')] = $current->format('H:i');
             $current->addMinutes($duree); // Passe à la plage horaire suivante
         }
-    
+
         Log::info('Plages horaires calculées', ['options' => $options->toArray()]);
-    
+
         return $options->toArray();
     }
-    
-    
-    
-    
+
+
+
+
 }

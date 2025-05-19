@@ -1,10 +1,10 @@
 <?php
 return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'broadcasting/auth'],
 
     'allowed_methods' => ['*'], // Autorise toutes les méthodes (GET, POST, etc.)
 
-    'allowed_origins' => ['http://localhost:5173'], // Remplace par l'URL de ton front (React/Vite/Next.js)
+    'allowed_origins' => ['*'], // Remplace par l'URL de ton front (React/Vite/Next.js)
 
     'allowed_origins_patterns' => [],
 

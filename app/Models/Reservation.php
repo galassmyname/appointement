@@ -11,10 +11,17 @@ class Reservation extends Model
 
     protected $fillable = [
         'prestataire_id',
-        'jour',
+        'date', // ✅ renommé ici
         'heureDebut',
         'heureFin',
         'client_id',
+    ];
+
+    // ✅ Optionnel : indiquer à Laravel que "date" est une instance de Carbon
+    protected $casts = [
+        'date' => 'date',
+        'heureDebut' => 'datetime:H:i', // si stocké comme time
+        'heureFin' => 'datetime:H:i',
     ];
 
     /**
