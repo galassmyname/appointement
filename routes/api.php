@@ -25,6 +25,8 @@ Route::post('/auth/refresh', [AuthController::class, 'refreshToken']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('/ajouter-prestataire', [UserController::class, 'ajouterPrestataire']);
+});
 require_once __DIR__.'/prestataire.php';
 require_once __DIR__.'/utilisateur.php';

@@ -3,24 +3,23 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;  // N’oublie pas cet import
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Enregistrer tous les services de l'application.
+     * Register any application services.
      */
-    public function register(): void
+    public function register()
     {
         //
     }
 
     /**
-     * Démarrer tous les services de l'application.
+     * Bootstrap any application services.
      */
     public function boot()
     {
-        if (env('APP_ENV') == 'production') {
-            $this->app['request']->server->set('HTTPS', true);
-        }
+        Schema::defaultStringLength(191);
     }
 }
