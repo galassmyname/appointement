@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\NotifyClientAboutRendezVous;
 use App\Jobs\SendReminderEmail;
@@ -20,6 +21,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\PrestatairePasswordMail;
 
 class UserController extends Controller
 {
@@ -152,8 +156,51 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+        
+    }
+   public function ajouterPrestataire(Request $request)
+{
+    \Log::info('Requête d\'ajout prestataire:', $request->all());
+    
+    $user = auth()->user();
+    \Log::info('Utilisateur authentifié:', $user ? $user->toArray() : 'Non authentifié');
+
+    if (!$user) {
+        return response()->json(['message' => 'Non authentifié'], 401);
     }
 
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Accès refusé'], 403);
+    }
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'telephone' => 'required|string|unique:users',
+        'specialite' => 'required|string'
+    ]);
+
+    $password = Str::random(10); // Génère un mot de passe aléatoire
+
+    $prestataire = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'telephone' => $validated['telephone'],
+        'specialite' => $validated['specialite'],
+        'password' => Hash::make($password),
+        'role' => 'prestataire'
+    ]);
+
+    // Envoi de l'email
+    Mail::to($prestataire->email)
+        ->send(new PrestatairePasswordMail(
+            $prestataire->name,
+            $password,
+            $prestataire->email
+        ));
+
+    return response()->json($prestataire, 201);
+}
     /**
      * Obtient les plages horaires disponibles pour un prestataire selon la durée déterminée
      * Utilise la méthode calculerPlagesHoraires du modèle Disponibilite
