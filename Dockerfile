@@ -32,5 +32,5 @@ RUN composer install --optimize-autoloader --no-dev --no-interaction
 # Exposer le port
 EXPOSE 8000
 
-# Générer la clé Laravel si nécessaire et lancer le serveur
-CMD php artisan key:generate --force && php artisan serve --host=0.0.0.0 --port=8000
+# Lancer Laravel en utilisant les variables Railway
+CMD php artisan serve --host=0.0.0.0 --port=8000
