@@ -1,24 +1,36 @@
+# Utiliser PHP FPM 8.2
 FROM php:8.2-fpm
 
-# Installer les extensions nécessaires
+# Installer les extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     libicu-dev \
+    libonig-dev \
+    libxml2-dev \
     zip \
     unzip \
     libzip-dev \
+    git \
+    curl \
     && docker-php-ext-install intl bcmath zip pdo_mysql
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copier le projet
+# Définir le répertoire de travail
 WORKDIR /var/www/html
+
+# Copier le projet
 COPY . .
 
+# Définir les permissions correctes pour Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Installer les dépendances Laravel
-RUN composer install --optimize-autoloader --no-interaction
+RUN composer install --optimize-autoloader --no-dev --no-interaction
 
 # Exposer le port
 EXPOSE 8000
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Générer la clé Laravel si nécessaire et lancer le serveur
+CMD php artisan key:generate --force && php artisan serve --host=0.0.0.0 --port=8000
