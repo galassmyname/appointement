@@ -1,4 +1,3 @@
-# Utiliser PHP 8.2 FPM pour production
 FROM php:8.2-fpm
 
 # Installer les extensions nécessaires
@@ -7,8 +6,6 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    git \
-    curl \
     && docker-php-ext-install intl bcmath zip pdo_mysql
 
 # Installer Composer
@@ -19,13 +16,9 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installer les dépendances Laravel
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --optimize-autoloader --no-interaction
 
-# Donner les droits à storage et bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache
+# Exposer le port
+EXPOSE 8000
 
-# Exposer le port attendu par Railway
-EXPOSE 8080
-
-# Démarrer le serveur PHP intégré
-CMD php -S 0.0.0.0:8080 -t public
+CMD php artisan serve --host=0.0.0.0 --port=8000
