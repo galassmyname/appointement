@@ -1,5 +1,5 @@
-# Utiliser PHP CLI pour Laravel
-FROM php:8.2-cli
+# Utiliser PHP 8.2 FPM pour production
+FROM php:8.2-fpm
 
 # Installer les extensions nécessaires
 RUN apt-get update && apt-get install -y \
@@ -24,9 +24,8 @@ RUN composer install --no-dev --optimize-autoloader
 # Donner les droits à storage et bootstrap/cache
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Exposer le port fourni par Railway
-EXPOSE $PORT
+# Exposer le port attendu par Railway
+EXPOSE 8080
 
-# Lancer Laravel
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
-
+# Démarrer le serveur PHP intégré
+CMD php -S 0.0.0.0:8080 -t public
