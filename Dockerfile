@@ -1,26 +1,31 @@
-# Utiliser PHP 8.2 FPM
-FROM php:8.2-fpm
+# Utiliser PHP CLI pour Laravel
+FROM php:8.2-cli
 
-# Installer les dépendances système pour les extensions PHP
+# Installer les extensions nécessaires
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     zip \
     unzip \
     libzip-dev \
+    git \
+    curl \
     && docker-php-ext-install intl bcmath zip pdo_mysql
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copier le projet dans le conteneur
+# Copier le projet
 WORKDIR /var/www/html
 COPY . .
 
 # Installer les dépendances Laravel
-RUN composer install --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader
 
-# Exposer le port 8000
-EXPOSE 8000
+# Donner les droits à storage et bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# Exposer le port fourni par Railway
+EXPOSE $PORT
 
 # Lancer Laravel
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+CMD php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan serve --host=0.0.0.0 --port=$PORT
