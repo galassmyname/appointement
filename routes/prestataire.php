@@ -25,6 +25,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/rendezvous/{rendezVousId}/annulation-urgence', [PrestataireController::class, 'annulationUrgence']);
         Route::get('/rendezvous/annulations-urgence/verifier', [PrestataireController::class, 'verifierAnnulationsRestantes']);
 
-        Route::get('rendezvous/{rendezVousId}', [PrestataireController::class, 'showRendezVous']);
+      
+        Route::get('/rendezvous/{rendezVousId}', [PrestataireController::class, 'showRendezVous']);
     });
 });
