@@ -18,9 +18,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Filament\Models\Contracts\FilamentUser;
 
-class User extends Authenticatable implements JWTSubject, FilamentUser
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens;
     use HasFactory;
@@ -133,13 +132,6 @@ class User extends Authenticatable implements JWTSubject, FilamentUser
     public function getJWTCustomClaims()
     {
         return [];
-    }
-     public function canAccessFilament(): bool
-    {
-        // Par exemple, seuls les admins peuvent accéder à Filament
-        return $this->is_admin === 1;
-        // ou selon le rôle Spatie
-        // return $this->hasRole('admin');
     }
 
     // Surcharge de la méthode boot pour ajouter des comportements spécifiques lors de la création d'un utilisateur
