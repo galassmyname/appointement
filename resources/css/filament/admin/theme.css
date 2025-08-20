@@ -1,3 +1,12 @@
+/* resources/css/filament/admin/theme.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Palette Filament personnalisée */
+:root {
+    --filament-primary: #FFD700; /* jaune */
+    --filament-primary-foreground: #000000; /* noir */
+    --filament-background: #111111; /* fond sombre */
+    --filament-card-background: #1a1a1a;
+}
