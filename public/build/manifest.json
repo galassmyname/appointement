@@ -4,6 +4,11 @@
     "src": "resources/css/app.css",
     "isEntry": true
   },
+  "resources/css/theme.css": {
+    "file": "assets/theme-DcyIwLGs.css",
+    "src": "resources/css/theme.css",
+    "isEntry": true
+  },
   "resources/js/app.js": {
     "file": "assets/app-DENG0CfP.js",
     "name": "app",
