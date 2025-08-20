@@ -56,6 +56,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            // Ajouter cette méthode pour contrôler l'accès au panel
+            ->authGuard('web') // Spécifier le guard explicitement
+            ->authPasswordBroker('users') // Spécifier le password broker
+            ->databaseNotifications() // Activer les notifications de base de données si nécessaire
+            ->viteTheme('resources/css/filament/admin/theme.css'); // Si vous avez un thème personnalisé
     }
 }
