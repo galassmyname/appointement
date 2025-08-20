@@ -31,11 +31,7 @@ RUN composer install --optimize-autoloader --no-dev --no-interaction
 
 # Exposer le port
 EXPOSE 8000
-RUN mkdir -p /var/www/html/public/build && echo '{}' > /var/www/html/public/build/manifest.json
-RUN php artisan filament:assets || true
-RUN php artisan config:cache || true
-RUN php artisan route:cache || true
-RUN php artisan view:cache || true
+
 
 # Lancer Laravel en utilisant les variables Railway
 CMD php artisan serve --host=0.0.0.0 --port=8000
