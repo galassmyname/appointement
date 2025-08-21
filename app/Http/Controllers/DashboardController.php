@@ -28,6 +28,7 @@ class DashboardController extends Controller
         $cancelledRendezvous = Rendezvous::where('status', 'annulé')->count();
         $cancellationRate = $totalRendezvous ? round(($cancelledRendezvous / $totalRendezvous) * 100, 2) : 0;
 
+        // Retourner les données vers la vue
         return view('dashboard', compact(
             'totalRendezvous',
             'totalPrestataires',

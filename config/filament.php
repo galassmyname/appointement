@@ -55,9 +55,7 @@ return [
     |
     */
 
-    'assets_path' => 'build',
- // c'est là que Vite mettra les fichiers CSS/JS
-
+    'assets_path' => null,
 
     /*
     |--------------------------------------------------------------------------

@@ -3,29 +3,24 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\URL; // <-- Ajouté
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Enregistrer tous les services de l'application.
      */
-    public function register()
+    public function register(): void
     {
         //
     }
 
     /**
-     * Bootstrap any application services.
+     * Démarrer tous les services de l'application.
      */
     public function boot()
     {
-        Schema::defaultStringLength(191);
-
-        // Force HTTPS en production
-        if (config('app.env') === 'production') {
-            URL::forceScheme('https');
+        if (env('APP_ENV') == 'production') {
+            $this->app['request']->server->set('HTTPS', true);
         }
     }
 }
